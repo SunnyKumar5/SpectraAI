@@ -1,13 +1,23 @@
-<<<<<<< HEAD
 # SpectraAI — Multi-Spectral Generative AI Suite
 
-**Scaffold-Constrained Multi-Spectral Analysis for Heterocycle Characterization**
+![SpectraAI Foundation Model Architecture](assets/foundation_architecture.png)
 
-A professional PyQt5 desktop application combining generative AI (Claude / Gemini) with multi-spectral reasoning (¹H NMR, ¹³C NMR, IR, HRMS, UV-Vis) to interpret, validate, and predict molecular structures — specialized for synthetic heterocycles.
+## 🧬 Foundation Model Architecture: MST-GNN Hybrid
+SpectraAI implements a state-of-the-art **Multimodal Spectroscopic Transformer (MST)** paired with an **SE(3)-Equivariant Geometric Refiner**. Unlike traditional fragment-based tools, SpectraAI treats spectral signals as a latent manifold, aligning heterogeneous data streams ($^{1}$H, $^{13}$C, and HSQC NMR) into a shared chemical embedding space.
+
+### Technical Core:
+*   **Multimodal Spectroscopic Transformer (MST)**: Tokenizes spectral peaks and employs cross-modal attention to identify long-range correlations between NMR chemical shifts.
+*   **SE(3)-Equivariant GNN**: Translates the latent manifold into 3D coordinate space, ensuring rotational and translational invariance during molecular reconstruction.
+*   **Physics-Guided Feedback Loop**: Iteratively refines predicted structures by back-calculating theoretical spectra and minimizing the $\Delta\delta$ spectral fidelity loss.
 
 ---
 
-## Research Novelty
+## ⚡ The Determinative Pipeline
+![The Determinative Pipeline](assets/determinative_pipeline.png)
+The system operates on **Reverse-Spectroscopy Logic**: moving from observable electronic shielding signals to atomic coordinates via automated spin-system deconvolution and global constraint optimization.
+
+---
+
 
 SpectraAI introduces **six key innovations** not found in existing tools:
 
@@ -36,10 +46,16 @@ SpectraAI introduces **six key innovations** not found in existing tools:
 - Individual check results table with color-coded status
 - Natural language validation summary
 
-### Visualization
+### Visualization & Explainability
+![Interpretability Panel](assets/interpretability.png)
 - Interactive NMR stick plots with Lorentzian line shapes
 - IR spectrum display with functional group region labeling
 - Completeness ring showing data coverage
+- **Explainable AI (XAI)**: Integrated gradients for spectral saliency mapping and Bayesian uncertainty estimation for atom-level confidence.
+
+### Vision Transformer (ViT) Analysis
+![ViT NMR Architecture](assets/vit_nmr.png)
+SpectraAI leverages a Vision Transformer (ViT) to process raw spectral images, employing hierarchical patch embedding and automated axis mapping via Hough-space line detection to preserve peak morphology from legacy raster data.
 
 ### Scaffold Support
 - Imidazo[1,2-a]pyridines
@@ -216,7 +232,4 @@ MIT License — See [LICENSE](LICENSE) for details.
 ## Acknowledgments
 
 Research collaboration with BITS Pilani. Built with PyQt5, pyqtgraph, Anthropic Claude API, and Google Gemini API.
-=======
-# SpectraAI
-Spectra AI is a foundation model for molecular structure elucidation. It uses a Multimodal Spectroscopic Transformer to align $^{1}$H, $^{13}$C, and HSQC NMR signals into a latent chemical manifold. An SE(3)-equivariant GNN then refines 3D coordinates with a 0.9987 $R^{2}$ accuracy across a 1.1M compound chemical space.
->>>>>>> 36067c802fdcedf29d1b8200746c21a8219c6603
+
