@@ -1,0 +1,75 @@
+{
+  "compound_id": "SPEC-003",
+  "name": "1-Benzyl-4-phenyl-1H-1,2,3-triazole",
+  "smiles": "c1ccc(-c2cn(Cc3ccccc3)nn2)cc1",
+  "formula": "C15H13N3",
+  "molecular_weight": 235.2870,
+  "metadata": {
+    "scaffold_family": "triazole",
+    "reaction_type": "CuAAC (Copper-catalyzed Azide-Alkyne Cycloaddition)",
+    "catalyst": "CuSO4/sodium ascorbate",
+    "solvent_media": "t-BuOH/H2O (1:1)",
+    "is_ionic_liquid": false,
+    "source_paper": "Click chemistry reference",
+    "notes": "1,4-disubstituted triazole from CuAAC"
+  },
+  "h1_nmr": {
+    "nucleus": "1H",
+    "frequency": 400,
+    "solvent": "CDCl3",
+    "peaks": [
+      {"shift": 7.82, "multiplicity": "d", "J": [7.2], "integration": 2.0, "assignment": "ArH (2',6') phenyl"},
+      {"shift": 7.68, "multiplicity": "s", "J": [], "integration": 1.0, "assignment": "H-5 (triazole)"},
+      {"shift": 7.42, "multiplicity": "t", "J": [7.5], "integration": 2.0, "assignment": "ArH (3',5') phenyl"},
+      {"shift": 7.36, "multiplicity": "m", "J": [], "integration": 3.0, "assignment": "ArH benzyl (3'',4'',5'')"},
+      {"shift": 7.33, "multiplicity": "t", "J": [7.3], "integration": 1.0, "assignment": "ArH (4') phenyl"},
+      {"shift": 7.28, "multiplicity": "d", "J": [7.4], "integration": 2.0, "assignment": "ArH benzyl (2'',6'')"},
+      {"shift": 5.56, "multiplicity": "s", "J": [], "integration": 2.0, "assignment": "N-CH2-Ph"}
+    ],
+    "raw_text": "1H NMR (400 MHz, CDCl3): δ 7.82 (d, J = 7.2 Hz, 2H, ArH), 7.68 (s, 1H, triazole-H), 7.42 (t, J = 7.5 Hz, 2H, ArH), 7.36 (m, 3H, ArH), 7.33 (t, J = 7.3 Hz, 1H, ArH), 7.28 (d, J = 7.4 Hz, 2H, ArH), 5.56 (s, 2H, N-CH2)"
+  },
+  "c13_nmr": {
+    "nucleus": "13C",
+    "frequency": 100,
+    "solvent": "CDCl3",
+    "peaks": [
+      {"shift": 148.2, "multiplicity": "s", "assignment": "C-4 (triazole, quaternary)"},
+      {"shift": 134.5, "multiplicity": "s", "assignment": "C-1'' (benzyl ipso)"},
+      {"shift": 130.8, "multiplicity": "s", "assignment": "C-1' (phenyl ipso)"},
+      {"shift": 129.2, "multiplicity": "s", "assignment": "C-3'',5'' (benzyl)"},
+      {"shift": 128.9, "multiplicity": "s", "assignment": "C-4'' (benzyl)"},
+      {"shift": 128.8, "multiplicity": "s", "assignment": "C-3',5' (phenyl)"},
+      {"shift": 128.1, "multiplicity": "s", "assignment": "C-4' (phenyl)"},
+      {"shift": 128.0, "multiplicity": "s", "assignment": "C-2'',6'' (benzyl)"},
+      {"shift": 125.7, "multiplicity": "s", "assignment": "C-2',6' (phenyl)"},
+      {"shift": 119.5, "multiplicity": "s", "assignment": "C-5 (triazole CH)"},
+      {"shift": 54.2, "multiplicity": "s", "assignment": "N-CH2"}
+    ],
+    "raw_text": "13C NMR (100 MHz, CDCl3): δ 148.2, 134.5, 130.8, 129.2, 128.9, 128.8, 128.1, 128.0, 125.7, 119.5, 54.2"
+  },
+  "ir": {
+    "method": "KBr",
+    "absorptions": [
+      {"wavenumber": 3138, "intensity": "w", "assignment": "triazole C-H"},
+      {"wavenumber": 3064, "intensity": "w", "assignment": "aromatic C-H"},
+      {"wavenumber": 1602, "intensity": "m", "assignment": "C=C aromatic"},
+      {"wavenumber": 1497, "intensity": "m", "assignment": "C=C aromatic"},
+      {"wavenumber": 1456, "intensity": "m", "assignment": "triazole ring stretch"},
+      {"wavenumber": 1221, "intensity": "m", "assignment": "N-N stretch"},
+      {"wavenumber": 1043, "intensity": "m", "assignment": "C-N stretch"},
+      {"wavenumber": 764, "intensity": "s", "assignment": "aromatic C-H oop"},
+      {"wavenumber": 694, "intensity": "s", "assignment": "monosubst aromatic"}
+    ],
+    "raw_text": "IR (KBr): 3138, 3064, 1602, 1497, 1456, 1221, 1043, 764, 694 cm-1"
+  },
+  "hrms": {
+    "technique": "ESI",
+    "ion_type": "[M+H]+",
+    "calculated_mz": 236.1182,
+    "observed_mz": 236.1179,
+    "formula": "C15H13N3",
+    "ion_formula": "C15H14N3",
+    "raw_text": "HRMS (ESI) m/z calcd for C15H14N3 [M+H]+ 236.1182, found 236.1179"
+  },
+  "melting_point": [128, 130]
+}

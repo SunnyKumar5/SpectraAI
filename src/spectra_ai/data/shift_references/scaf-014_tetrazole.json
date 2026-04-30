@@ -1,0 +1,384 @@
+{
+  "scaffold_id": "SCAF-014",
+  "scaffold_name": "tetrazole",
+  "display_name": "1H-Tetrazole",
+  "core_smiles": "c1nnn[nH]1",
+  "core_smarts": "[#6]1[#7][#7][#7][#7H]1",
+  "numbering_image_ref": "tetrazole_numbering.png",
+  "positions": {
+    "C5": {
+      "atom_type": "C",
+      "hybridization": "sp2",
+      "is_ring_junction": false,
+      "is_bridgehead": false,
+      "substitutable": true,
+      "default_H_count": 1,
+      "notes": "Only carbon in tetrazole ring"
+    },
+    "N1": {
+      "atom_type": "N",
+      "hybridization": "sp2",
+      "is_ring_junction": false,
+      "is_bridgehead": false,
+      "substitutable": true,
+      "default_H_count": 1,
+      "notes": "NH nitrogen, tautomeric with N4"
+    },
+    "N2": {
+      "atom_type": "N",
+      "hybridization": "sp2",
+      "is_ring_junction": false,
+      "is_bridgehead": false,
+      "substitutable": false,
+      "default_H_count": 0,
+      "notes": "Tertiary nitrogen"
+    },
+    "N3": {
+      "atom_type": "N",
+      "hybridization": "sp2",
+      "is_ring_junction": false,
+      "is_bridgehead": false,
+      "substitutable": false,
+      "default_H_count": 0,
+      "notes": "Tertiary nitrogen"
+    },
+    "N4": {
+      "atom_type": "N",
+      "hybridization": "sp2",
+      "is_ring_junction": false,
+      "is_bridgehead": false,
+      "substitutable": true,
+      "default_H_count": 0,
+      "notes": "Nitrogen involved in tautomerism with N1"
+    }
+  },
+  "h1_shifts": {
+    "C5": {
+      "base_shift": 8.9,
+      "range": [
+        8.7,
+        9.2
+      ],
+      "typical_multiplicity": "s",
+      "typical_J": "none",
+      "substituent_effects": [
+        {
+          "substituent": "-OMe",
+          "position_of_substituent": "C5",
+          "delta_shift": -0.8,
+          "new_range": [
+            7.9,
+            8.4
+          ],
+          "note": "Electron-donating effect"
+        },
+        {
+          "substituent": "-OH",
+          "position_of_substituent": "C5",
+          "delta_shift": -0.6,
+          "new_range": [
+            8.1,
+            8.6
+          ],
+          "note": "Moderate electron donation"
+        },
+        {
+          "substituent": "-NH2",
+          "position_of_substituent": "C5",
+          "delta_shift": -1.2,
+          "new_range": [
+            7.5,
+            8.0
+          ],
+          "note": "Strong electron donation"
+        },
+        {
+          "substituent": "-NO2",
+          "position_of_substituent": "C5",
+          "delta_shift": 0.5,
+          "new_range": [
+            9.2,
+            9.7
+          ],
+          "note": "Strong electron withdrawal"
+        },
+        {
+          "substituent": "-Cl",
+          "position_of_substituent": "C5",
+          "delta_shift": -0.2,
+          "new_range": [
+            8.5,
+            9.0
+          ],
+          "note": "Weak electron withdrawal"
+        },
+        {
+          "substituent": "-Br",
+          "position_of_substituent": "C5",
+          "delta_shift": -0.3,
+          "new_range": [
+            8.4,
+            8.9
+          ],
+          "note": "Weak electron withdrawal"
+        },
+        {
+          "substituent": "-CF3",
+          "position_of_substituent": "C5",
+          "delta_shift": 0.3,
+          "new_range": [
+            9.0,
+            9.5
+          ],
+          "note": "Electron-withdrawing"
+        },
+        {
+          "substituent": "-Ph",
+          "position_of_substituent": "C5",
+          "delta_shift": -0.4,
+          "new_range": [
+            8.3,
+            8.8
+          ],
+          "note": "Aromatic substitution"
+        },
+        {
+          "substituent": "-CN",
+          "position_of_substituent": "C5",
+          "delta_shift": 0.4,
+          "new_range": [
+            9.1,
+            9.6
+          ],
+          "note": "Strong electron withdrawal"
+        },
+        {
+          "substituent": "-CHO",
+          "position_of_substituent": "C5",
+          "delta_shift": 0.2,
+          "new_range": [
+            8.9,
+            9.4
+          ],
+          "note": "Carbonyl electron withdrawal"
+        }
+      ],
+      "solvent_effects": {
+        "CDCl3": 8.9,
+        "DMSO-d6": 9.1,
+        "CD3OD": 8.8,
+        "D2O": 8.7
+      }
+    },
+    "N1": {
+      "base_shift": 14.5,
+      "range": [
+        13.8,
+        15.2
+      ],
+      "typical_multiplicity": "br s",
+      "typical_J": "none",
+      "substituent_effects": [
+        {
+          "substituent": "-OMe",
+          "position_of_substituent": "C5",
+          "delta_shift": -0.3,
+          "new_range": [
+            13.5,
+            14.9
+          ],
+          "note": "Reduced acidity"
+        },
+        {
+          "substituent": "-NO2",
+          "position_of_substituent": "C5",
+          "delta_shift": 0.4,
+          "new_range": [
+            14.2,
+            15.6
+          ],
+          "note": "Increased acidity"
+        },
+        {
+          "substituent": "-Ph",
+          "position_of_substituent": "C5",
+          "delta_shift": -0.2,
+          "new_range": [
+            13.6,
+            15.0
+          ],
+          "note": "Slight reduction in acidity"
+        },
+        {
+          "substituent": "-CF3",
+          "position_of_substituent": "C5",
+          "delta_shift": 0.3,
+          "new_range": [
+            14.1,
+            15.5
+          ],
+          "note": "Increased acidity"
+        }
+      ],
+      "solvent_effects": {
+        "CDCl3": 14.5,
+        "DMSO-d6": 15.8,
+        "CD3OD": 13.2,
+        "D2O": 12.8
+      }
+    }
+  },
+  "c13_shifts": {
+    "C5": {
+      "base_shift": 144.2,
+      "range": [
+        143.5,
+        145.0
+      ],
+      "carbon_type": "CH",
+      "dept_phase": "up",
+      "substituent_effects": [
+        {
+          "substituent": "-OMe",
+          "position_of_substituent": "C5",
+          "delta_shift": -12.5,
+          "new_range": [
+            131.0,
+            132.5
+          ],
+          "note": "Electron donation, upfield shift"
+        },
+        {
+          "substituent": "-NH2",
+          "position_of_substituent": "C5",
+          "delta_shift": -18.2,
+          "new_range": [
+            125.0,
+            127.0
+          ],
+          "note": "Strong electron donation"
+        },
+        {
+          "substituent": "-NO2",
+          "position_of_substituent": "C5",
+          "delta_shift": 8.3,
+          "new_range": [
+            151.8,
+            153.3
+          ],
+          "note": "Electron withdrawal, downfield"
+        },
+        {
+          "substituent": "-Cl",
+          "position_of_substituent": "C5",
+          "delta_shift": -2.1,
+          "new_range": [
+            141.4,
+            142.9
+          ],
+          "note": "Slight upfield shift"
+        },
+        {
+          "substituent": "-Ph",
+          "position_of_substituent": "C5",
+          "delta_shift": -5.8,
+          "new_range": [
+            137.7,
+            139.2
+          ],
+          "note": "Aromatic conjugation"
+        },
+        {
+          "substituent": "-CF3",
+          "position_of_substituent": "C5",
+          "delta_shift": 4.2,
+          "new_range": [
+            147.7,
+            149.2
+          ],
+          "note": "Electron withdrawal"
+        },
+        {
+          "substituent": "-CN",
+          "position_of_substituent": "C5",
+          "delta_shift": 6.8,
+          "new_range": [
+            150.3,
+            151.8
+          ],
+          "note": "Strong electron withdrawal"
+        }
+      ]
+    }
+  },
+  "ir_bands": {
+    "present": [
+      {
+        "band_range": [
+          3100,
+          2800
+        ],
+        "intensity": "broad, medium",
+        "assignment": "N-H stretch (tautomeric NH)"
+      },
+      {
+        "band_range": [
+          1620,
+          1580
+        ],
+        "intensity": "strong",
+        "assignment": "C=N stretch"
+      },
+      {
+        "band_range": [
+          1520,
+          1480
+        ],
+        "intensity": "medium",
+        "assignment": "Ring skeletal vibrations"
+      },
+      {
+        "band_range": [
+          1180,
+          1140
+        ],
+        "intensity": "medium",
+        "assignment": "N-N stretch"
+      },
+      {
+        "band_range": [
+          980,
+          940
+        ],
+        "intensity": "medium",
+        "assignment": "Ring breathing"
+      }
+    ],
+    "absent": [
+      {
+        "band_range": [
+          1700,
+          1650
+        ],
+        "assignment": "C=O stretch",
+        "significance": "Distinguishes from carbonyl-containing heterocycles"
+      },
+      {
+        "band_range": [
+          3400,
+          3200
+        ],
+        "assignment": "Primary amine N-H stretch",
+        "significance": "Sharp NH2 bands not present in tetrazole"
+      }
+    ]
+  },
+  "diagnostic_features": [
+    "Highly deshielded C5-H proton at 8.7-9.2 ppm due to four adjacent nitrogens",
+    "Very broad, exchangeable NH proton at 13.8-15.2 ppm indicating high acidity",
+    "Single carbon signal at 144 ppm in 13C NMR, characteristic of tetrazole C5",
+    "Tautomeric equilibrium between N1-H and N4-H forms causes NH broadening",
+    "Strong IR absorption at 1620-1580 cm⁻¹ for C=N stretch",
+    "NH proton chemical shift highly solvent-dependent due to hydrogen bonding"
+  ]
+}

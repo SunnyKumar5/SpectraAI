@@ -1,0 +1,1345 @@
+{
+  "scaffold_id": "SCAF-007",
+  "scaffold_name": "isoquinoline",
+  "display_name": "Isoquinoline",
+  "core_smiles": "c1ccc2cnccc2c1",
+  "core_smarts": "c1ccc2cnccc2c1",
+  "numbering_image_ref": "isoquinoline_numbering.png",
+  "positions": {
+    "1": {
+      "atom_type": "N",
+      "hybridization": "sp2",
+      "is_ring_junction": false,
+      "is_bridgehead": false,
+      "substitutable": false,
+      "default_H_count": 0,
+      "notes": "Pyridine-like nitrogen"
+    },
+    "3": {
+      "atom_type": "C",
+      "hybridization": "sp2",
+      "is_ring_junction": false,
+      "is_bridgehead": false,
+      "substitutable": true,
+      "default_H_count": 1,
+      "notes": "Beta to nitrogen"
+    },
+    "4": {
+      "atom_type": "C",
+      "hybridization": "sp2",
+      "is_ring_junction": false,
+      "is_bridgehead": false,
+      "substitutable": true,
+      "default_H_count": 1,
+      "notes": "Gamma to nitrogen"
+    },
+    "4a": {
+      "atom_type": "C",
+      "hybridization": "sp2",
+      "is_ring_junction": true,
+      "is_bridgehead": true,
+      "substitutable": false,
+      "default_H_count": 0,
+      "notes": "Ring junction carbon"
+    },
+    "5": {
+      "atom_type": "C",
+      "hybridization": "sp2",
+      "is_ring_junction": false,
+      "is_bridgehead": false,
+      "substitutable": true,
+      "default_H_count": 1,
+      "notes": "Benzene ring position"
+    },
+    "6": {
+      "atom_type": "C",
+      "hybridization": "sp2",
+      "is_ring_junction": false,
+      "is_bridgehead": false,
+      "substitutable": true,
+      "default_H_count": 1,
+      "notes": "Benzene ring position"
+    },
+    "7": {
+      "atom_type": "C",
+      "hybridization": "sp2",
+      "is_ring_junction": false,
+      "is_bridgehead": false,
+      "substitutable": true,
+      "default_H_count": 1,
+      "notes": "Benzene ring position"
+    },
+    "8": {
+      "atom_type": "C",
+      "hybridization": "sp2",
+      "is_ring_junction": false,
+      "is_bridgehead": false,
+      "substitutable": true,
+      "default_H_count": 1,
+      "notes": "Benzene ring position"
+    },
+    "8a": {
+      "atom_type": "C",
+      "hybridization": "sp2",
+      "is_ring_junction": true,
+      "is_bridgehead": true,
+      "substitutable": false,
+      "default_H_count": 0,
+      "notes": "Ring junction carbon"
+    }
+  },
+  "h1_shifts": {
+    "3": {
+      "base_shift": 7.65,
+      "range": [
+        7.5,
+        7.8
+      ],
+      "typical_multiplicity": "d",
+      "typical_J": "J = 5.5 Hz (coupling to H-4)",
+      "substituent_effects": [
+        {
+          "substituent": "-OMe",
+          "position_of_substituent": "6",
+          "delta_shift": -0.15,
+          "new_range": [
+            7.35,
+            7.65
+          ]
+        },
+        {
+          "substituent": "-OH",
+          "position_of_substituent": "7",
+          "delta_shift": -0.2,
+          "new_range": [
+            7.3,
+            7.6
+          ]
+        },
+        {
+          "substituent": "-NH2",
+          "position_of_substituent": "5",
+          "delta_shift": -0.35,
+          "new_range": [
+            7.15,
+            7.45
+          ]
+        },
+        {
+          "substituent": "-NO2",
+          "position_of_substituent": "6",
+          "delta_shift": 0.25,
+          "new_range": [
+            7.75,
+            8.05
+          ]
+        },
+        {
+          "substituent": "-Cl",
+          "position_of_substituent": "7",
+          "delta_shift": 0.05,
+          "new_range": [
+            7.55,
+            7.85
+          ]
+        },
+        {
+          "substituent": "-Br",
+          "position_of_substituent": "6",
+          "delta_shift": 0.1,
+          "new_range": [
+            7.6,
+            7.9
+          ]
+        },
+        {
+          "substituent": "-F",
+          "position_of_substituent": "8",
+          "delta_shift": -0.1,
+          "new_range": [
+            7.4,
+            7.7
+          ]
+        },
+        {
+          "substituent": "-CF3",
+          "position_of_substituent": "5",
+          "delta_shift": 0.2,
+          "new_range": [
+            7.7,
+            8.0
+          ]
+        },
+        {
+          "substituent": "-CN",
+          "position_of_substituent": "6",
+          "delta_shift": 0.3,
+          "new_range": [
+            7.8,
+            8.1
+          ]
+        },
+        {
+          "substituent": "-Ph",
+          "position_of_substituent": "4",
+          "delta_shift": 0.15,
+          "new_range": [
+            7.65,
+            7.95
+          ]
+        }
+      ],
+      "solvent_effects": {
+        "CDCl3": 7.65,
+        "DMSO-d6": 7.85,
+        "CD3OD": 7.7
+      }
+    },
+    "4": {
+      "base_shift": 7.55,
+      "range": [
+        7.4,
+        7.7
+      ],
+      "typical_multiplicity": "d",
+      "typical_J": "J = 5.5 Hz (coupling to H-3)",
+      "substituent_effects": [
+        {
+          "substituent": "-OMe",
+          "position_of_substituent": "6",
+          "delta_shift": -0.1,
+          "new_range": [
+            7.3,
+            7.6
+          ]
+        },
+        {
+          "substituent": "-OH",
+          "position_of_substituent": "7",
+          "delta_shift": -0.15,
+          "new_range": [
+            7.25,
+            7.55
+          ]
+        },
+        {
+          "substituent": "-NH2",
+          "position_of_substituent": "5",
+          "delta_shift": -0.25,
+          "new_range": [
+            7.15,
+            7.45
+          ]
+        },
+        {
+          "substituent": "-NO2",
+          "position_of_substituent": "6",
+          "delta_shift": 0.2,
+          "new_range": [
+            7.6,
+            7.9
+          ]
+        },
+        {
+          "substituent": "-Cl",
+          "position_of_substituent": "7",
+          "delta_shift": 0.05,
+          "new_range": [
+            7.45,
+            7.75
+          ]
+        },
+        {
+          "substituent": "-Br",
+          "position_of_substituent": "6",
+          "delta_shift": 0.08,
+          "new_range": [
+            7.48,
+            7.78
+          ]
+        },
+        {
+          "substituent": "-F",
+          "position_of_substituent": "8",
+          "delta_shift": -0.05,
+          "new_range": [
+            7.35,
+            7.65
+          ]
+        },
+        {
+          "substituent": "-CF3",
+          "position_of_substituent": "5",
+          "delta_shift": 0.15,
+          "new_range": [
+            7.55,
+            7.85
+          ]
+        },
+        {
+          "substituent": "-Ph",
+          "position_of_substituent": "3",
+          "delta_shift": 0.25,
+          "new_range": [
+            7.65,
+            7.95
+          ]
+        }
+      ],
+      "solvent_effects": {
+        "CDCl3": 7.55,
+        "DMSO-d6": 7.75,
+        "CD3OD": 7.6
+      }
+    },
+    "5": {
+      "base_shift": 8.05,
+      "range": [
+        7.9,
+        8.2
+      ],
+      "typical_multiplicity": "d",
+      "typical_J": "J = 8.0 Hz (coupling to H-6)",
+      "substituent_effects": [
+        {
+          "substituent": "-OMe",
+          "position_of_substituent": "6",
+          "delta_shift": -0.45,
+          "new_range": [
+            7.45,
+            7.75
+          ]
+        },
+        {
+          "substituent": "-OH",
+          "position_of_substituent": "5",
+          "delta_shift": -1.2,
+          "new_range": [
+            6.7,
+            7.0
+          ],
+          "note": "OH substitution at this position"
+        },
+        {
+          "substituent": "-NH2",
+          "position_of_substituent": "5",
+          "delta_shift": -1.5,
+          "new_range": [
+            6.4,
+            6.7
+          ],
+          "note": "NH2 substitution at this position"
+        },
+        {
+          "substituent": "-NO2",
+          "position_of_substituent": "5",
+          "delta_shift": 0.85,
+          "new_range": [
+            8.75,
+            9.05
+          ],
+          "note": "NO2 substitution at this position"
+        },
+        {
+          "substituent": "-Cl",
+          "position_of_substituent": "6",
+          "delta_shift": -0.25,
+          "new_range": [
+            7.65,
+            7.95
+          ]
+        },
+        {
+          "substituent": "-Br",
+          "position_of_substituent": "7",
+          "delta_shift": -0.15,
+          "new_range": [
+            7.75,
+            8.05
+          ]
+        },
+        {
+          "substituent": "-F",
+          "position_of_substituent": "5",
+          "delta_shift": -0.8,
+          "new_range": [
+            7.1,
+            7.4
+          ],
+          "note": "F substitution at this position"
+        },
+        {
+          "substituent": "-CF3",
+          "position_of_substituent": "6",
+          "delta_shift": 0.1,
+          "new_range": [
+            8.0,
+            8.3
+          ]
+        }
+      ],
+      "solvent_effects": {
+        "CDCl3": 8.05,
+        "DMSO-d6": 8.25,
+        "CD3OD": 8.1
+      }
+    },
+    "6": {
+      "base_shift": 7.6,
+      "range": [
+        7.45,
+        7.75
+      ],
+      "typical_multiplicity": "t",
+      "typical_J": "J = 8.0 Hz (coupling to H-5 and H-7)",
+      "substituent_effects": [
+        {
+          "substituent": "-OMe",
+          "position_of_substituent": "6",
+          "delta_shift": -0.85,
+          "new_range": [
+            6.6,
+            6.9
+          ],
+          "note": "OMe substitution at this position"
+        },
+        {
+          "substituent": "-OH",
+          "position_of_substituent": "7",
+          "delta_shift": -0.2,
+          "new_range": [
+            7.25,
+            7.55
+          ]
+        },
+        {
+          "substituent": "-NH2",
+          "position_of_substituent": "6",
+          "delta_shift": -1.15,
+          "new_range": [
+            6.3,
+            6.6
+          ],
+          "note": "NH2 substitution at this position"
+        },
+        {
+          "substituent": "-NO2",
+          "position_of_substituent": "6",
+          "delta_shift": 0.75,
+          "new_range": [
+            8.2,
+            8.5
+          ],
+          "note": "NO2 substitution at this position"
+        },
+        {
+          "substituent": "-Cl",
+          "position_of_substituent": "5",
+          "delta_shift": 0.15,
+          "new_range": [
+            7.6,
+            7.9
+          ]
+        },
+        {
+          "substituent": "-Br",
+          "position_of_substituent": "6",
+          "delta_shift": 0.25,
+          "new_range": [
+            7.7,
+            8.0
+          ],
+          "note": "Br substitution at this position"
+        },
+        {
+          "substituent": "-F",
+          "position_of_substituent": "7",
+          "delta_shift": -0.15,
+          "new_range": [
+            7.3,
+            7.6
+          ]
+        },
+        {
+          "substituent": "-CF3",
+          "position_of_substituent": "5",
+          "delta_shift": 0.2,
+          "new_range": [
+            7.65,
+            7.95
+          ]
+        }
+      ],
+      "solvent_effects": {
+        "CDCl3": 7.6,
+        "DMSO-d6": 7.8,
+        "CD3OD": 7.65
+      }
+    },
+    "7": {
+      "base_shift": 7.7,
+      "range": [
+        7.55,
+        7.85
+      ],
+      "typical_multiplicity": "t",
+      "typical_J": "J = 8.0 Hz (coupling to H-6 and H-8)",
+      "substituent_effects": [
+        {
+          "substituent": "-OMe",
+          "position_of_substituent": "6",
+          "delta_shift": 0.05,
+          "new_range": [
+            7.6,
+            7.9
+          ]
+        },
+        {
+          "substituent": "-OH",
+          "position_of_substituent": "7",
+          "delta_shift": -0.95,
+          "new_range": [
+            6.6,
+            6.9
+          ],
+          "note": "OH substitution at this position"
+        },
+        {
+          "substituent": "-NH2",
+          "position_of_substituent": "8",
+          "delta_shift": -0.3,
+          "new_range": [
+            7.25,
+            7.55
+          ]
+        },
+        {
+          "substituent": "-NO2",
+          "position_of_substituent": "7",
+          "delta_shift": 0.8,
+          "new_range": [
+            8.35,
+            8.65
+          ],
+          "note": "NO2 substitution at this position"
+        },
+        {
+          "substituent": "-Cl",
+          "position_of_substituent": "7",
+          "delta_shift": 0.05,
+          "new_range": [
+            7.6,
+            7.9
+          ],
+          "note": "Cl substitution at this position"
+        },
+        {
+          "substituent": "-Br",
+          "position_of_substituent": "6",
+          "delta_shift": 0.1,
+          "new_range": [
+            7.65,
+            7.95
+          ]
+        },
+        {
+          "substituent": "-F",
+          "position_of_substituent": "8",
+          "delta_shift": -0.1,
+          "new_range": [
+            7.45,
+            7.75
+          ]
+        },
+        {
+          "substituent": "-CF3",
+          "position_of_substituent": "7",
+          "delta_shift": 0.35,
+          "new_range": [
+            7.9,
+            8.2
+          ],
+          "note": "CF3 substitution at this position"
+        }
+      ],
+      "solvent_effects": {
+        "CDCl3": 7.7,
+        "DMSO-d6": 7.9,
+        "CD3OD": 7.75
+      }
+    },
+    "8": {
+      "base_shift": 7.85,
+      "range": [
+        7.7,
+        8.0
+      ],
+      "typical_multiplicity": "d",
+      "typical_J": "J = 8.0 Hz (coupling to H-7)",
+      "substituent_effects": [
+        {
+          "substituent": "-OMe",
+          "position_of_substituent": "7",
+          "delta_shift": -0.25,
+          "new_range": [
+            7.45,
+            7.75
+          ]
+        },
+        {
+          "substituent": "-OH",
+          "position_of_substituent": "8",
+          "delta_shift": -1.05,
+          "new_range": [
+            6.65,
+            6.95
+          ],
+          "note": "OH substitution at this position"
+        },
+        {
+          "substituent": "-NH2",
+          "position_of_substituent": "8",
+          "delta_shift": -1.35,
+          "new_range": [
+            6.35,
+            6.65
+          ],
+          "note": "NH2 substitution at this position"
+        },
+        {
+          "substituent": "-NO2",
+          "position_of_substituent": "6",
+          "delta_shift": 0.3,
+          "new_range": [
+            8.0,
+            8.3
+          ]
+        },
+        {
+          "substituent": "-Cl",
+          "position_of_substituent": "8",
+          "delta_shift": -0.15,
+          "new_range": [
+            7.55,
+            7.85
+          ],
+          "note": "Cl substitution at this position"
+        },
+        {
+          "substituent": "-Br",
+          "position_of_substituent": "7",
+          "delta_shift": 0.05,
+          "new_range": [
+            7.75,
+            8.05
+          ]
+        },
+        {
+          "substituent": "-F",
+          "position_of_substituent": "8",
+          "delta_shift": -0.7,
+          "new_range": [
+            7.0,
+            7.3
+          ],
+          "note": "F substitution at this position"
+        },
+        {
+          "substituent": "-CF3",
+          "position_of_substituent": "6",
+          "delta_shift": 0.15,
+          "new_range": [
+            7.85,
+            8.15
+          ]
+        }
+      ],
+      "solvent_effects": {
+        "CDCl3": 7.85,
+        "DMSO-d6": 8.05,
+        "CD3OD": 7.9
+      }
+    }
+  },
+  "c13_shifts": {
+    "1": {
+      "base_shift": 152.5,
+      "range": [
+        151.0,
+        154.0
+      ],
+      "carbon_type": "quaternary",
+      "dept_phase": "absent",
+      "substituent_effects": [
+        {
+          "substituent": "-OMe",
+          "position_of_substituent": "6",
+          "delta_shift": -2.5,
+          "new_range": [
+            148.5,
+            151.5
+          ]
+        },
+        {
+          "substituent": "-NO2",
+          "position_of_substituent": "5",
+          "delta_shift": 3.0,
+          "new_range": [
+            154.0,
+            157.0
+          ]
+        },
+        {
+          "substituent": "-Cl",
+          "position_of_substituent": "7",
+          "delta_shift": -1.0,
+          "new_range": [
+            150.0,
+            153.0
+          ]
+        },
+        {
+          "substituent": "-Ph",
+          "position_of_substituent": "4",
+          "delta_shift": 1.5,
+          "new_range": [
+            152.5,
+            155.5
+          ]
+        },
+        {
+          "substituent": "-CF3",
+          "position_of_substituent": "6",
+          "delta_shift": 2.0,
+          "new_range": [
+            153.0,
+            156.0
+          ]
+        },
+        {
+          "substituent": "-NH2",
+          "position_of_substituent": "8",
+          "delta_shift": -4.0,
+          "new_range": [
+            147.0,
+            150.0
+          ]
+        }
+      ]
+    },
+    "3": {
+      "base_shift": 127.8,
+      "range": [
+        126.5,
+        129.0
+      ],
+      "carbon_type": "CH",
+      "dept_phase": "up",
+      "substituent_effects": [
+        {
+          "substituent": "-OMe",
+          "position_of_substituent": "6",
+          "delta_shift": -1.5,
+          "new_range": [
+            125.0,
+            127.5
+          ]
+        },
+        {
+          "substituent": "-NO2",
+          "position_of_substituent": "5",
+          "delta_shift": 2.5,
+          "new_range": [
+            129.0,
+            131.5
+          ]
+        },
+        {
+          "substituent": "-Cl",
+          "position_of_substituent": "7",
+          "delta_shift": 0.5,
+          "new_range": [
+            127.0,
+            129.5
+          ]
+        },
+        {
+          "substituent": "-Ph",
+          "position_of_substituent": "4",
+          "delta_shift": 3.0,
+          "new_range": [
+            129.5,
+            132.0
+          ]
+        },
+        {
+          "substituent": "-CF3",
+          "position_of_substituent": "6",
+          "delta_shift": 1.8,
+          "new_range": [
+            128.3,
+            130.8
+          ]
+        },
+        {
+          "substituent": "-NH2",
+          "position_of_substituent": "8",
+          "delta_shift": -2.0,
+          "new_range": [
+            124.5,
+            127.0
+          ]
+        }
+      ]
+    },
+    "4": {
+      "base_shift": 125.2,
+      "range": [
+        124.0,
+        126.5
+      ],
+      "carbon_type": "CH",
+      "dept_phase": "up",
+      "substituent_effects": [
+        {
+          "substituent": "-OMe",
+          "position_of_substituent": "6",
+          "delta_shift": -1.0,
+          "new_range": [
+            123.0,
+            125.5
+          ]
+        },
+        {
+          "substituent": "-NO2",
+          "position_of_substituent": "5",
+          "delta_shift": 2.0,
+          "new_range": [
+            126.0,
+            128.5
+          ]
+        },
+        {
+          "substituent": "-Cl",
+          "position_of_substituent": "7",
+          "delta_shift": 0.3,
+          "new_range": [
+            124.3,
+            126.8
+          ]
+        },
+        {
+          "substituent": "-Ph",
+          "position_of_substituent": "3",
+          "delta_shift": 4.5,
+          "new_range": [
+            128.5,
+            131.0
+          ]
+        },
+        {
+          "substituent": "-CF3",
+          "position_of_substituent": "6",
+          "delta_shift": 1.5,
+          "new_range": [
+            125.5,
+            128.0
+          ]
+        },
+        {
+          "substituent": "-NH2",
+          "position_of_substituent": "8",
+          "delta_shift": -1.5,
+          "new_range": [
+            122.5,
+            125.0
+          ]
+        }
+      ]
+    },
+    "4a": {
+      "base_shift": 136.5,
+      "range": [
+        135.0,
+        138.0
+      ],
+      "carbon_type": "quaternary",
+      "dept_phase": "absent",
+      "substituent_effects": [
+        {
+          "substituent": "-OMe",
+          "position_of_substituent": "6",
+          "delta_shift": 2.0,
+          "new_range": [
+            137.0,
+            140.0
+          ]
+        },
+        {
+          "substituent": "-NO2",
+          "position_of_substituent": "5",
+          "delta_shift": -3.0,
+          "new_range": [
+            132.0,
+            135.0
+          ]
+        },
+        {
+          "substituent": "-Cl",
+          "position_of_substituent": "7",
+          "delta_shift": -1.5,
+          "new_range": [
+            134.0,
+            136.5
+          ]
+        },
+        {
+          "substituent": "-Ph",
+          "position_of_substituent": "4",
+          "delta_shift": 1.0,
+          "new_range": [
+            136.0,
+            139.0
+          ]
+        },
+        {
+          "substituent": "-CF3",
+          "position_of_substituent": "6",
+          "delta_shift": -2.5,
+          "new_range": [
+            133.0,
+            135.5
+          ]
+        },
+        {
+          "substituent": "-NH2",
+          "position_of_substituent": "8",
+          "delta_shift": 3.5,
+          "new_range": [
+            138.5,
+            141.5
+          ]
+        }
+      ]
+    },
+    "5": {
+      "base_shift": 130.2,
+      "range": [
+        129.0,
+        131.5
+      ],
+      "carbon_type": "CH",
+      "dept_phase": "up",
+      "substituent_effects": [
+        {
+          "substituent": "-OMe",
+          "position_of_substituent": "5",
+          "delta_shift": -25.0,
+          "new_range": [
+            104.0,
+            106.5
+          ],
+          "note": "OMe substitution at this position"
+        },
+        {
+          "substituent": "-NO2",
+          "position_of_substituent": "5",
+          "delta_shift": 15.0,
+          "new_range": [
+            144.0,
+            146.5
+          ],
+          "note": "NO2 substitution at this position"
+        },
+        {
+          "substituent": "-Cl",
+          "position_of_substituent": "6",
+          "delta_shift": -2.0,
+          "new_range": [
+            127.0,
+            129.5
+          ]
+        },
+        {
+          "substituent": "-Ph",
+          "position_of_substituent": "4",
+          "delta_shift": 1.5,
+          "new_range": [
+            130.5,
+            133.0
+          ]
+        },
+        {
+          "substituent": "-CF3",
+          "position_of_substituent": "5",
+          "delta_shift": 8.0,
+          "new_range": [
+            137.0,
+            139.5
+          ],
+          "note": "CF3 substitution at this position"
+        },
+        {
+          "substituent": "-NH2",
+          "position_of_substituent": "5",
+          "delta_shift": -30.0,
+          "new_range": [
+            99.0,
+            101.5
+          ],
+          "note": "NH2 substitution at this position"
+        }
+      ]
+    },
+    "6": {
+      "base_shift": 127.5,
+      "range": [
+        126.0,
+        129.0
+      ],
+      "carbon_type": "CH",
+      "dept_phase": "up",
+      "substituent_effects": [
+        {
+          "substituent": "-OMe",
+          "position_of_substituent": "6",
+          "delta_shift": 32.0,
+          "new_range": [
+            158.0,
+            161.0
+          ],
+          "note": "OMe substitution at this position"
+        },
+        {
+          "substituent": "-NO2",
+          "position_of_substituent": "6",
+          "delta_shift": 20.0,
+          "new_range": [
+            146.0,
+            149.0
+          ],
+          "note": "NO2 substitution at this position"
+        },
+        {
+          "substituent": "-Cl",
+          "position_of_substituent": "6",
+          "delta_shift": 7.0,
+          "new_range": [
+            133.0,
+            136.0
+          ],
+          "note": "Cl substitution at this position"
+        },
+        {
+          "substituent": "-Ph",
+          "position_of_substituent": "5",
+          "delta_shift": 2.0,
+          "new_range": [
+            128.0,
+            131.0
+          ]
+        },
+        {
+          "substituent": "-CF3",
+          "position_of_substituent": "7",
+          "delta_shift": -1.5,
+          "new_range": [
+            125.0,
+            127.5
+          ]
+        },
+        {
+          "substituent": "-NH2",
+          "position_of_substituent": "6",
+          "delta_shift": 25.0,
+          "new_range": [
+            151.0,
+            154.0
+          ],
+          "note": "NH2 substitution at this position"
+        }
+      ]
+    },
+    "7": {
+      "base_shift": 129.8,
+      "range": [
+        128.5,
+        131.0
+      ],
+      "carbon_type": "CH",
+      "dept_phase": "up",
+      "substituent_effects": [
+        {
+          "substituent": "-OMe",
+          "position_of_substituent": "7",
+          "delta_shift": 25.0,
+          "new_range": [
+            153.5,
+            156.0
+          ],
+          "note": "OMe substitution at this position"
+        },
+        {
+          "substituent": "-NO2",
+          "position_of_substituent": "7",
+          "delta_shift": 18.0,
+          "new_range": [
+            146.5,
+            149.0
+          ],
+          "note": "NO2 substitution at this position"
+        },
+        {
+          "substituent": "-Cl",
+          "position_of_substituent": "7",
+          "delta_shift": 5.0,
+          "new_range": [
+            133.5,
+            136.0
+          ],
+          "note": "Cl substitution at this position"
+        },
+        {
+          "substituent": "-Ph",
+          "position_of_substituent": "6",
+          "delta_shift": 1.5,
+          "new_range": [
+            130.0,
+            132.5
+          ]
+        },
+        {
+          "substituent": "-CF3",
+          "position_of_substituent": "7",
+          "delta_shift": -2.0,
+          "new_range": [
+            126.5,
+            129.0
+          ],
+          "note": "CF3 substitution at this position"
+        },
+        {
+          "substituent": "-NH2",
+          "position_of_substituent": "8",
+          "delta_shift": -3.0,
+          "new_range": [
+            125.5,
+            128.0
+          ]
+        }
+      ]
+    },
+    "8": {
+      "base_shift": 126.8,
+      "range": [
+        125.5,
+        128.0
+      ],
+      "carbon_type": "CH",
+      "dept_phase": "up",
+      "substituent_effects": [
+        {
+          "substituent": "-OMe",
+          "position_of_substituent": "8",
+          "delta_shift": 28.0,
+          "new_range": [
+            153.5,
+            156.0
+          ],
+          "note": "OMe substitution at this position"
+        },
+        {
+          "substituent": "-NO2",
+          "position_of_substituent": "8",
+          "delta_shift": 22.0,
+          "new_range": [
+            147.5,
+            150.0
+          ],
+          "note": "NO2 substitution at this position"
+        },
+        {
+          "substituent": "-Cl",
+          "position_of_substituent": "8",
+          "delta_shift": 8.0,
+          "new_range": [
+            133.5,
+            136.0
+          ],
+          "note": "Cl substitution at this position"
+        },
+        {
+          "substituent": "-Ph",
+          "position_of_substituent": "7",
+          "delta_shift": 2.0,
+          "new_range": [
+            127.5,
+            130.0
+          ]
+        },
+        {
+          "substituent": "-CF3",
+          "position_of_substituent": "6",
+          "delta_shift": -1.0,
+          "new_range": [
+            124.5,
+            127.0
+          ]
+        },
+        {
+          "substituent": "-NH2",
+          "position_of_substituent": "8",
+          "delta_shift": 20.0,
+          "new_range": [
+            145.5,
+            148.0
+          ],
+          "note": "NH2 substitution at this position"
+        }
+      ]
+    },
+    "8a": {
+      "base_shift": 142.8,
+      "range": [
+        141.5,
+        144.0
+      ],
+      "carbon_type": "quaternary",
+      "dept_phase": "absent",
+      "substituent_effects": [
+        {
+          "substituent": "-OMe",
+          "position_of_substituent": "7",
+          "delta_shift": -2.0,
+          "new_range": [
+            139.5,
+            142.0
+          ]
+        },
+        {
+          "substituent": "-NO2",
+          "position_of_substituent": "8",
+          "delta_shift": -5.0,
+          "new_range": [
+            136.5,
+            139.0
+          ]
+        },
+        {
+          "substituent": "-Cl",
+          "position_of_substituent": "8",
+          "delta_shift": -3.0,
+          "new_range": [
+            138.5,
+            141.0
+          ]
+        },
+        {
+          "substituent": "-Ph",
+          "position_of_substituent": "6",
+          "delta_shift": 1.0,
+          "new_range": [
+            142.5,
+            145.0
+          ]
+        },
+        {
+          "substituent": "-CF3",
+          "position_of_substituent": "7",
+          "delta_shift": -1.5,
+          "new_range": [
+            140.0,
+            142.5
+          ]
+        },
+        {
+          "substituent": "-NH2",
+          "position_of_substituent": "8",
+          "delta_shift": 3.0,
+          "new_range": [
+            144.5,
+            147.0
+          ]
+        }
+      ]
+    }
+  },
+  "ir_bands": {
+    "present": [
+      {
+        "band_range": [
+          1620,
+          1580
+        ],
+        "intensity": "medium-strong",
+        "assignment": "C=N stretch (pyridine-like)"
+      },
+      {
+        "band_range": [
+          1580,
+          1520
+        ],
+        "intensity": "strong",
+        "assignment": "Aromatic C=C stretch"
+      },
+      {
+        "band_range": [
+          1500,
+          1450
+        ],
+        "intensity": "medium",
+        "assignment": "Aromatic C=C stretch"
+      },
+      {
+        "band_range": [
+          3080,
+          3020
+        ],
+        "intensity": "medium",
+        "assignment": "Aromatic C-H stretch"
+      },
+      {
+        "band_range": [
+          850,
+          800
+        ],
+        "intensity": "strong",
+        "assignment": "Out-of-plane C-H bending (substituted benzene)"
+      },
+      {
+        "band_range": [
+          780,
+          740
+        ],
+        "intensity": "medium",
+        "assignment": "Ring breathing and C-H out-of-plane"
+      }
+    ],
+    "absent": [
+      {
+        "band_range": [
+          3500,
+          3200
+        ],
+        "assignment": "N-H stretch",
+        "significance": "Distinguishes from aminoisoquinolines"
+      },
+      {
+        "band_range": [
+          1700,
+          1650
+        ],
+        "assignment": "C=O stretch",
+        "significance": "Distinguishes from isoquinoline ketones/aldehydes"
+      }
+    ]
+  },
+  "diagnostic_features": [
+    "H-5 appears most downfield (8.05 ppm) due to peri-interaction with nitrogen",
+    "H-3 and H-4 show characteristic doublet coupling (J = 5.5 Hz) in pyridine ring",
+    "Benzene ring protons (H-6, H-7, H-8) appear in typical aromatic region (7.6-7.9 ppm)",
+    "C-1 (nitrogen-bearing carbon) appears around 152.5 ppm, diagnostic for isoquinoline",
+    "Ring junction carbons (C-4a, C-8a) are distinctive at 136.5 and 142.8 ppm respectively",
+    "Substitution patterns dramatically affect H-5 chemical shift due to proximity to nitrogen"
+  ]
+}

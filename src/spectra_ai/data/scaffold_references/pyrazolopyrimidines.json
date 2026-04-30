@@ -1,0 +1,32 @@
+{
+  "scaffold": "pyrazolopyrimidine",
+  "display_name": "Pyrazolo[1,5-a]pyrimidine",
+  "core_smiles": "c1cc2cnnc2nc1",
+  "diagnostic_features": [
+    "H-3 singlet or doublet at δ 6.70–7.20 (pyrazole ring)",
+    "H-5 at δ 8.40–8.80 (peri to bridgehead N)",
+    "C-3a at δ 147–155 (bridgehead quaternary)",
+    "Absence of N-H in fused system"
+  ],
+  "h1_reference": {
+    "H-2":  {"range": [7.80, 8.40], "multiplicity": "d", "note": "J ~2 Hz, pyrazole"},
+    "H-3":  {"range": [6.70, 7.20], "multiplicity": "d", "note": "J ~2 Hz, pyrazole"},
+    "H-5":  {"range": [8.40, 8.80], "multiplicity": "d", "note": "J ~4–7 Hz, pyrimidine"},
+    "H-6":  {"range": [7.00, 7.40], "multiplicity": "d or dd", "note": "J ~4–7 Hz"},
+    "H-7":  {"range": [8.30, 8.70], "multiplicity": "d", "note": "J ~4 Hz, pyrimidine"}
+  },
+  "c13_reference": {
+    "C-2":  {"range": [140, 145], "note": "CH, pyrazole"},
+    "C-3":  {"range": [95, 105], "note": "CH, pyrazole (upfield)"},
+    "C-3a": {"range": [147, 155], "note": "quaternary, bridgehead junction"},
+    "C-5":  {"range": [148, 158], "note": "CH, pyrimidine"},
+    "C-6":  {"range": [108, 115], "note": "CH, pyrimidine"},
+    "C-7":  {"range": [145, 155], "note": "CH, pyrimidine"}
+  },
+  "expected_ir_absent": ["N-H stretch (3200-3500 cm⁻¹)"],
+  "expected_ir_present": [
+    "aromatic C-H stretch (3000-3100 cm⁻¹)",
+    "C=N stretch (1550-1600 cm⁻¹)",
+    "C=C aromatic (1480-1530 cm⁻¹)"
+  ]
+}

@@ -1,0 +1,625 @@
+{
+  "scaffold_id": "SCAF-019",
+  "scaffold_name": "oxazole",
+  "display_name": "1,3-Oxazole",
+  "core_smiles": "c1cocn1",
+  "core_smarts": "c1cocn1",
+  "numbering_image_ref": "oxazole_numbering.png",
+  "positions": {
+    "C2": {
+      "atom_type": "C",
+      "hybridization": "sp2",
+      "is_ring_junction": false,
+      "is_bridgehead": false,
+      "substitutable": true,
+      "default_H_count": 1,
+      "notes": "Between N and O, most deshielded position"
+    },
+    "C4": {
+      "atom_type": "C",
+      "hybridization": "sp2",
+      "is_ring_junction": false,
+      "is_bridgehead": false,
+      "substitutable": true,
+      "default_H_count": 1,
+      "notes": "Adjacent to oxygen"
+    },
+    "C5": {
+      "atom_type": "C",
+      "hybridization": "sp2",
+      "is_ring_junction": false,
+      "is_bridgehead": false,
+      "substitutable": true,
+      "default_H_count": 1,
+      "notes": "Adjacent to nitrogen"
+    },
+    "N3": {
+      "atom_type": "N",
+      "hybridization": "sp2",
+      "is_ring_junction": false,
+      "is_bridgehead": false,
+      "substitutable": false,
+      "default_H_count": 0,
+      "notes": "Ring nitrogen"
+    },
+    "O1": {
+      "atom_type": "O",
+      "hybridization": "sp2",
+      "is_ring_junction": false,
+      "is_bridgehead": false,
+      "substitutable": false,
+      "default_H_count": 0,
+      "notes": "Ring oxygen"
+    }
+  },
+  "h1_shifts": {
+    "C2": {
+      "base_shift": 7.69,
+      "range": [
+        7.5,
+        8.2
+      ],
+      "typical_multiplicity": "s",
+      "typical_J": "none",
+      "substituent_effects": [
+        {
+          "substituent": "-OMe",
+          "position_of_substituent": "C4",
+          "delta_shift": -0.15,
+          "new_range": [
+            7.35,
+            7.65
+          ],
+          "note": "Electron-donating effect"
+        },
+        {
+          "substituent": "-OMe",
+          "position_of_substituent": "C5",
+          "delta_shift": -0.12,
+          "new_range": [
+            7.4,
+            7.7
+          ],
+          "note": "Electron-donating effect"
+        },
+        {
+          "substituent": "-NO2",
+          "position_of_substituent": "C4",
+          "delta_shift": 0.35,
+          "new_range": [
+            7.85,
+            8.55
+          ],
+          "note": "Strong electron-withdrawing effect"
+        },
+        {
+          "substituent": "-NO2",
+          "position_of_substituent": "C5",
+          "delta_shift": 0.28,
+          "new_range": [
+            7.78,
+            8.48
+          ],
+          "note": "Strong electron-withdrawing effect"
+        },
+        {
+          "substituent": "-Cl",
+          "position_of_substituent": "C4",
+          "delta_shift": 0.08,
+          "new_range": [
+            7.58,
+            8.28
+          ],
+          "note": "Weak electron-withdrawing"
+        },
+        {
+          "substituent": "-Br",
+          "position_of_substituent": "C4",
+          "delta_shift": 0.12,
+          "new_range": [
+            7.62,
+            8.32
+          ],
+          "note": "Weak electron-withdrawing"
+        },
+        {
+          "substituent": "-Ph",
+          "position_of_substituent": "C4",
+          "delta_shift": 0.05,
+          "new_range": [
+            7.55,
+            8.25
+          ],
+          "note": "Aromatic conjugation"
+        },
+        {
+          "substituent": "-CF3",
+          "position_of_substituent": "C4",
+          "delta_shift": 0.22,
+          "new_range": [
+            7.72,
+            8.42
+          ],
+          "note": "Strong electron-withdrawing"
+        }
+      ],
+      "solvent_effects": {
+        "CDCl3": 7.69,
+        "DMSO-d6": 8.42,
+        "CD3OD": 8.15,
+        "D2O": 8.28
+      }
+    },
+    "C4": {
+      "base_shift": 7.2,
+      "range": [
+        6.8,
+        7.8
+      ],
+      "typical_multiplicity": "s",
+      "typical_J": "none",
+      "substituent_effects": [
+        {
+          "substituent": "-OMe",
+          "position_of_substituent": "C2",
+          "delta_shift": -0.25,
+          "new_range": [
+            6.55,
+            7.55
+          ],
+          "note": "Electron-donating effect"
+        },
+        {
+          "substituent": "-OMe",
+          "position_of_substituent": "C5",
+          "delta_shift": -0.18,
+          "new_range": [
+            6.62,
+            7.62
+          ],
+          "note": "Electron-donating effect"
+        },
+        {
+          "substituent": "-NO2",
+          "position_of_substituent": "C2",
+          "delta_shift": 0.42,
+          "new_range": [
+            7.22,
+            8.22
+          ],
+          "note": "Strong electron-withdrawing"
+        },
+        {
+          "substituent": "-NO2",
+          "position_of_substituent": "C5",
+          "delta_shift": 0.28,
+          "new_range": [
+            7.08,
+            8.08
+          ],
+          "note": "Strong electron-withdrawing"
+        },
+        {
+          "substituent": "-Cl",
+          "position_of_substituent": "C2",
+          "delta_shift": 0.15,
+          "new_range": [
+            6.95,
+            7.95
+          ],
+          "note": "Electron-withdrawing"
+        },
+        {
+          "substituent": "-Br",
+          "position_of_substituent": "C5",
+          "delta_shift": 0.08,
+          "new_range": [
+            6.88,
+            7.88
+          ],
+          "note": "Weak electron-withdrawing"
+        },
+        {
+          "substituent": "-Ph",
+          "position_of_substituent": "C2",
+          "delta_shift": 0.12,
+          "new_range": [
+            6.92,
+            7.92
+          ],
+          "note": "Aromatic conjugation"
+        },
+        {
+          "substituent": "-CHO",
+          "position_of_substituent": "C5",
+          "delta_shift": 0.35,
+          "new_range": [
+            7.15,
+            8.15
+          ],
+          "note": "Electron-withdrawing carbonyl"
+        }
+      ],
+      "solvent_effects": {
+        "CDCl3": 7.2,
+        "DMSO-d6": 7.85,
+        "CD3OD": 7.52,
+        "D2O": 7.68
+      }
+    },
+    "C5": {
+      "base_shift": 6.98,
+      "range": [
+        6.5,
+        7.6
+      ],
+      "typical_multiplicity": "s",
+      "typical_J": "none",
+      "substituent_effects": [
+        {
+          "substituent": "-OMe",
+          "position_of_substituent": "C2",
+          "delta_shift": -0.22,
+          "new_range": [
+            6.28,
+            7.38
+          ],
+          "note": "Electron-donating effect"
+        },
+        {
+          "substituent": "-OMe",
+          "position_of_substituent": "C4",
+          "delta_shift": -0.15,
+          "new_range": [
+            6.35,
+            7.45
+          ],
+          "note": "Electron-donating effect"
+        },
+        {
+          "substituent": "-NO2",
+          "position_of_substituent": "C2",
+          "delta_shift": 0.38,
+          "new_range": [
+            6.88,
+            7.98
+          ],
+          "note": "Strong electron-withdrawing"
+        },
+        {
+          "substituent": "-NO2",
+          "position_of_substituent": "C4",
+          "delta_shift": 0.45,
+          "new_range": [
+            6.95,
+            8.05
+          ],
+          "note": "Strong electron-withdrawing"
+        },
+        {
+          "substituent": "-Cl",
+          "position_of_substituent": "C4",
+          "delta_shift": 0.18,
+          "new_range": [
+            6.68,
+            7.78
+          ],
+          "note": "Electron-withdrawing"
+        },
+        {
+          "substituent": "-F",
+          "position_of_substituent": "C4",
+          "delta_shift": 0.25,
+          "new_range": [
+            6.75,
+            7.85
+          ],
+          "note": "Strong electron-withdrawing"
+        },
+        {
+          "substituent": "-Ph",
+          "position_of_substituent": "C4",
+          "delta_shift": 0.15,
+          "new_range": [
+            6.65,
+            7.75
+          ],
+          "note": "Aromatic conjugation"
+        },
+        {
+          "substituent": "-COCH3",
+          "position_of_substituent": "C4",
+          "delta_shift": 0.32,
+          "new_range": [
+            6.82,
+            7.92
+          ],
+          "note": "Electron-withdrawing carbonyl"
+        }
+      ],
+      "solvent_effects": {
+        "CDCl3": 6.98,
+        "DMSO-d6": 7.62,
+        "CD3OD": 7.28,
+        "D2O": 7.45
+      }
+    }
+  },
+  "c13_shifts": {
+    "C2": {
+      "base_shift": 151.2,
+      "range": [
+        148.0,
+        155.0
+      ],
+      "carbon_type": "CH",
+      "dept_phase": "up",
+      "substituent_effects": [
+        {
+          "substituent": "-OMe",
+          "position_of_substituent": "C4",
+          "delta_shift": -3.8,
+          "new_range": [
+            144.2,
+            151.2
+          ],
+          "note": "Electron-donating effect"
+        },
+        {
+          "substituent": "-NO2",
+          "position_of_substituent": "C4",
+          "delta_shift": 5.2,
+          "new_range": [
+            153.2,
+            160.2
+          ],
+          "note": "Strong electron-withdrawing"
+        },
+        {
+          "substituent": "-Cl",
+          "position_of_substituent": "C4",
+          "delta_shift": 1.8,
+          "new_range": [
+            149.8,
+            156.8
+          ],
+          "note": "Electron-withdrawing"
+        },
+        {
+          "substituent": "-Ph",
+          "position_of_substituent": "C4",
+          "delta_shift": 2.5,
+          "new_range": [
+            150.5,
+            157.5
+          ],
+          "note": "Aromatic conjugation"
+        },
+        {
+          "substituent": "-CF3",
+          "position_of_substituent": "C5",
+          "delta_shift": 4.8,
+          "new_range": [
+            152.8,
+            159.8
+          ],
+          "note": "Strong electron-withdrawing"
+        },
+        {
+          "substituent": "-CHO",
+          "position_of_substituent": "C4",
+          "delta_shift": 6.2,
+          "new_range": [
+            154.2,
+            161.2
+          ],
+          "note": "Electron-withdrawing carbonyl"
+        }
+      ]
+    },
+    "C4": {
+      "base_shift": 138.5,
+      "range": [
+        135.0,
+        145.0
+      ],
+      "carbon_type": "CH",
+      "dept_phase": "up",
+      "substituent_effects": [
+        {
+          "substituent": "-OMe",
+          "position_of_substituent": "C2",
+          "delta_shift": -5.2,
+          "new_range": [
+            129.8,
+            139.8
+          ],
+          "note": "Electron-donating effect"
+        },
+        {
+          "substituent": "-NO2",
+          "position_of_substituent": "C2",
+          "delta_shift": 8.5,
+          "new_range": [
+            143.5,
+            153.5
+          ],
+          "note": "Strong electron-withdrawing"
+        },
+        {
+          "substituent": "-Cl",
+          "position_of_substituent": "C5",
+          "delta_shift": 2.8,
+          "new_range": [
+            137.8,
+            147.8
+          ],
+          "note": "Electron-withdrawing"
+        },
+        {
+          "substituent": "-Ph",
+          "position_of_substituent": "C2",
+          "delta_shift": 3.2,
+          "new_range": [
+            138.2,
+            148.2
+          ],
+          "note": "Aromatic conjugation"
+        },
+        {
+          "substituent": "-COCH3",
+          "position_of_substituent": "C5",
+          "delta_shift": 6.8,
+          "new_range": [
+            141.8,
+            151.8
+          ],
+          "note": "Electron-withdrawing carbonyl"
+        },
+        {
+          "substituent": "-F",
+          "position_of_substituent": "C5",
+          "delta_shift": 4.5,
+          "new_range": [
+            139.5,
+            149.5
+          ],
+          "note": "Strong electron-withdrawing"
+        }
+      ]
+    },
+    "C5": {
+      "base_shift": 127.8,
+      "range": [
+        124.0,
+        135.0
+      ],
+      "carbon_type": "CH",
+      "dept_phase": "up",
+      "substituent_effects": [
+        {
+          "substituent": "-OMe",
+          "position_of_substituent": "C4",
+          "delta_shift": -4.5,
+          "new_range": [
+            119.5,
+            130.5
+          ],
+          "note": "Electron-donating effect"
+        },
+        {
+          "substituent": "-NO2",
+          "position_of_substituent": "C4",
+          "delta_shift": 7.8,
+          "new_range": [
+            131.8,
+            142.8
+          ],
+          "note": "Strong electron-withdrawing"
+        },
+        {
+          "substituent": "-Cl",
+          "position_of_substituent": "C4",
+          "delta_shift": 3.2,
+          "new_range": [
+            127.2,
+            138.2
+          ],
+          "note": "Electron-withdrawing"
+        },
+        {
+          "substituent": "-Ph",
+          "position_of_substituent": "C4",
+          "delta_shift": 4.8,
+          "new_range": [
+            128.8,
+            139.8
+          ],
+          "note": "Aromatic conjugation"
+        },
+        {
+          "substituent": "-CF3",
+          "position_of_substituent": "C2",
+          "delta_shift": 5.5,
+          "new_range": [
+            129.5,
+            140.5
+          ],
+          "note": "Strong electron-withdrawing"
+        },
+        {
+          "substituent": "-CHO",
+          "position_of_substituent": "C2",
+          "delta_shift": 6.8,
+          "new_range": [
+            130.8,
+            141.8
+          ],
+          "note": "Electron-withdrawing carbonyl"
+        }
+      ]
+    }
+  },
+  "ir_bands": {
+    "present": [
+      {
+        "band_range": [
+          1650,
+          1550
+        ],
+        "intensity": "strong",
+        "assignment": "C=N and C=C stretching"
+      },
+      {
+        "band_range": [
+          1200,
+          1050
+        ],
+        "intensity": "strong",
+        "assignment": "C-O stretching"
+      },
+      {
+        "band_range": [
+          3150,
+          3000
+        ],
+        "intensity": "medium",
+        "assignment": "Aromatic C-H stretching"
+      },
+      {
+        "band_range": [
+          850,
+          750
+        ],
+        "intensity": "medium",
+        "assignment": "Out-of-plane C-H bending"
+      }
+    ],
+    "absent": [
+      {
+        "band_range": [
+          3500,
+          3200
+        ],
+        "assignment": "N-H or O-H stretching",
+        "significance": "Distinguishes from imidazole or hydroxyl compounds"
+      },
+      {
+        "band_range": [
+          1750,
+          1700
+        ],
+        "assignment": "C=O stretching",
+        "significance": "Distinguishes from carbonyl-containing heterocycles"
+      }
+    ]
+  },
+  "diagnostic_features": [
+    "H-2 appears as most downfield singlet (7.5-8.2 ppm) due to position between N and O",
+    "All ring protons appear as singlets with no coupling in simple oxazoles",
+    "C-2 carbon is most deshielded (148-155 ppm) in 13C NMR",
+    "Strong IR absorption around 1600 cm⁻¹ for C=N stretching",
+    "Absence of N-H stretching distinguishes from imidazoles",
+    "Characteristic pattern of three aromatic CH signals in 1H NMR with H-2 > H-4 > H-5"
+  ]
+}

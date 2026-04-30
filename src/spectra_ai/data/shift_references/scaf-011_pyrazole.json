@@ -1,0 +1,758 @@
+{
+  "scaffold_id": "SCAF-011",
+  "scaffold_name": "pyrazole",
+  "display_name": "1H-Pyrazole",
+  "core_smiles": "c1cc[nH]n1",
+  "core_smarts": "[nH]1ncc[cH]1",
+  "numbering_image_ref": "pyrazole_numbering.png",
+  "positions": {
+    "1": {
+      "atom_type": "N",
+      "hybridization": "sp2",
+      "is_ring_junction": false,
+      "is_bridgehead": false,
+      "substitutable": true,
+      "default_H_count": 1,
+      "notes": "Pyrrole-type nitrogen, NH tautomer"
+    },
+    "2": {
+      "atom_type": "N",
+      "hybridization": "sp2",
+      "is_ring_junction": false,
+      "is_bridgehead": false,
+      "substitutable": false,
+      "default_H_count": 0,
+      "notes": "Pyridine-type nitrogen"
+    },
+    "3": {
+      "atom_type": "C",
+      "hybridization": "sp2",
+      "is_ring_junction": false,
+      "is_bridgehead": false,
+      "substitutable": true,
+      "default_H_count": 1,
+      "notes": "Adjacent to pyridine-type nitrogen"
+    },
+    "4": {
+      "atom_type": "C",
+      "hybridization": "sp2",
+      "is_ring_junction": false,
+      "is_bridgehead": false,
+      "substitutable": true,
+      "default_H_count": 1,
+      "notes": "Beta position to both nitrogens"
+    },
+    "5": {
+      "atom_type": "C",
+      "hybridization": "sp2",
+      "is_ring_junction": false,
+      "is_bridgehead": false,
+      "substitutable": true,
+      "default_H_count": 1,
+      "notes": "Adjacent to pyrrole-type nitrogen"
+    }
+  },
+  "h1_shifts": {
+    "1": {
+      "base_shift": 13.2,
+      "range": [
+        12.5,
+        14.0
+      ],
+      "typical_multiplicity": "br s",
+      "typical_J": "exchangeable",
+      "substituent_effects": [
+        {
+          "substituent": "-Ph",
+          "position_of_substituent": "3",
+          "delta_shift": -0.8,
+          "new_range": [
+            11.7,
+            13.2
+          ],
+          "note": "Electron-donating effect"
+        },
+        {
+          "substituent": "-NO2",
+          "position_of_substituent": "3",
+          "delta_shift": 0.5,
+          "new_range": [
+            13.0,
+            14.5
+          ],
+          "note": "Electron-withdrawing effect"
+        },
+        {
+          "substituent": "-OMe",
+          "position_of_substituent": "3",
+          "delta_shift": -1.2,
+          "new_range": [
+            11.3,
+            12.8
+          ],
+          "note": "Strong electron-donating"
+        },
+        {
+          "substituent": "-Cl",
+          "position_of_substituent": "4",
+          "delta_shift": 0.3,
+          "new_range": [
+            12.8,
+            14.3
+          ],
+          "note": "Weak electron-withdrawing"
+        }
+      ],
+      "solvent_effects": {
+        "CDCl3": 13.2,
+        "DMSO-d6": 12.8,
+        "CD3OD": 0.0,
+        "D2O": 0.0
+      }
+    },
+    "3": {
+      "base_shift": 7.65,
+      "range": [
+        7.4,
+        7.9
+      ],
+      "typical_multiplicity": "d",
+      "typical_J": "J = 2.1 Hz",
+      "substituent_effects": [
+        {
+          "substituent": "-OMe",
+          "position_of_substituent": "3",
+          "delta_shift": 0.0,
+          "new_range": [
+            0.0,
+            0.0
+          ],
+          "note": "Proton replaced by substituent"
+        },
+        {
+          "substituent": "-NO2",
+          "position_of_substituent": "3",
+          "delta_shift": 0.0,
+          "new_range": [
+            0.0,
+            0.0
+          ],
+          "note": "Proton replaced by substituent"
+        },
+        {
+          "substituent": "-Ph",
+          "position_of_substituent": "4",
+          "delta_shift": 0.2,
+          "new_range": [
+            7.6,
+            8.1
+          ],
+          "note": "Ortho deshielding"
+        },
+        {
+          "substituent": "-Cl",
+          "position_of_substituent": "4",
+          "delta_shift": 0.1,
+          "new_range": [
+            7.5,
+            8.0
+          ],
+          "note": "Weak deshielding"
+        },
+        {
+          "substituent": "-CF3",
+          "position_of_substituent": "5",
+          "delta_shift": 0.3,
+          "new_range": [
+            7.7,
+            8.2
+          ],
+          "note": "Electron-withdrawing effect"
+        },
+        {
+          "substituent": "-NH2",
+          "position_of_substituent": "5",
+          "delta_shift": -0.4,
+          "new_range": [
+            7.0,
+            7.5
+          ],
+          "note": "Electron-donating effect"
+        },
+        {
+          "substituent": "-Br",
+          "position_of_substituent": "4",
+          "delta_shift": 0.2,
+          "new_range": [
+            7.6,
+            8.1
+          ],
+          "note": "Halogen deshielding"
+        },
+        {
+          "substituent": "-CHO",
+          "position_of_substituent": "4",
+          "delta_shift": 0.5,
+          "new_range": [
+            7.9,
+            8.4
+          ],
+          "note": "Strong electron-withdrawing"
+        }
+      ],
+      "solvent_effects": {
+        "CDCl3": 7.65,
+        "DMSO-d6": 7.58,
+        "CD3OD": 7.62
+      }
+    },
+    "4": {
+      "base_shift": 6.25,
+      "range": [
+        6.1,
+        6.4
+      ],
+      "typical_multiplicity": "t",
+      "typical_J": "J = 2.1 Hz",
+      "substituent_effects": [
+        {
+          "substituent": "-Ph",
+          "position_of_substituent": "3",
+          "delta_shift": 0.3,
+          "new_range": [
+            6.4,
+            6.7
+          ],
+          "note": "Aromatic deshielding"
+        },
+        {
+          "substituent": "-NO2",
+          "position_of_substituent": "3",
+          "delta_shift": 0.6,
+          "new_range": [
+            6.7,
+            7.0
+          ],
+          "note": "Strong electron-withdrawing"
+        },
+        {
+          "substituent": "-OMe",
+          "position_of_substituent": "3",
+          "delta_shift": -0.2,
+          "new_range": [
+            5.9,
+            6.2
+          ],
+          "note": "Electron-donating effect"
+        },
+        {
+          "substituent": "-Cl",
+          "position_of_substituent": "4",
+          "delta_shift": 0.0,
+          "new_range": [
+            0.0,
+            0.0
+          ],
+          "note": "Proton replaced by substituent"
+        },
+        {
+          "substituent": "-CF3",
+          "position_of_substituent": "5",
+          "delta_shift": 0.4,
+          "new_range": [
+            6.5,
+            6.8
+          ],
+          "note": "Electron-withdrawing effect"
+        },
+        {
+          "substituent": "-NH2",
+          "position_of_substituent": "5",
+          "delta_shift": -0.3,
+          "new_range": [
+            5.8,
+            6.1
+          ],
+          "note": "Electron-donating effect"
+        },
+        {
+          "substituent": "-F",
+          "position_of_substituent": "3",
+          "delta_shift": 0.2,
+          "new_range": [
+            6.3,
+            6.6
+          ],
+          "note": "Electronegative halogen"
+        },
+        {
+          "substituent": "-COCH3",
+          "position_of_substituent": "3",
+          "delta_shift": 0.5,
+          "new_range": [
+            6.6,
+            6.9
+          ],
+          "note": "Carbonyl deshielding"
+        }
+      ],
+      "solvent_effects": {
+        "CDCl3": 6.25,
+        "DMSO-d6": 6.18,
+        "CD3OD": 6.22
+      }
+    },
+    "5": {
+      "base_shift": 7.45,
+      "range": [
+        7.2,
+        7.7
+      ],
+      "typical_multiplicity": "d",
+      "typical_J": "J = 1.8 Hz",
+      "substituent_effects": [
+        {
+          "substituent": "-Ph",
+          "position_of_substituent": "3",
+          "delta_shift": 0.1,
+          "new_range": [
+            7.3,
+            7.8
+          ],
+          "note": "Weak aromatic effect"
+        },
+        {
+          "substituent": "-NO2",
+          "position_of_substituent": "3",
+          "delta_shift": 0.4,
+          "new_range": [
+            7.6,
+            8.1
+          ],
+          "note": "Electron-withdrawing effect"
+        },
+        {
+          "substituent": "-OMe",
+          "position_of_substituent": "3",
+          "delta_shift": -0.3,
+          "new_range": [
+            6.9,
+            7.4
+          ],
+          "note": "Electron-donating effect"
+        },
+        {
+          "substituent": "-Cl",
+          "position_of_substituent": "4",
+          "delta_shift": 0.2,
+          "new_range": [
+            7.4,
+            7.9
+          ],
+          "note": "Weak deshielding"
+        },
+        {
+          "substituent": "-CF3",
+          "position_of_substituent": "5",
+          "delta_shift": 0.0,
+          "new_range": [
+            0.0,
+            0.0
+          ],
+          "note": "Proton replaced by substituent"
+        },
+        {
+          "substituent": "-NH2",
+          "position_of_substituent": "5",
+          "delta_shift": 0.0,
+          "new_range": [
+            0.0,
+            0.0
+          ],
+          "note": "Proton replaced by substituent"
+        },
+        {
+          "substituent": "-Br",
+          "position_of_substituent": "4",
+          "delta_shift": 0.3,
+          "new_range": [
+            7.5,
+            8.0
+          ],
+          "note": "Halogen deshielding"
+        },
+        {
+          "substituent": "-CN",
+          "position_of_substituent": "3",
+          "delta_shift": 0.5,
+          "new_range": [
+            7.7,
+            8.2
+          ],
+          "note": "Strong electron-withdrawing"
+        }
+      ],
+      "solvent_effects": {
+        "CDCl3": 7.45,
+        "DMSO-d6": 7.38,
+        "CD3OD": 7.42
+      }
+    }
+  },
+  "c13_shifts": {
+    "2": {
+      "base_shift": 140.2,
+      "range": [
+        139.0,
+        142.0
+      ],
+      "carbon_type": "quaternary",
+      "dept_phase": "absent",
+      "substituent_effects": [
+        {
+          "substituent": "-Ph",
+          "position_of_substituent": "3",
+          "delta_shift": -2.5,
+          "new_range": [
+            136.5,
+            139.5
+          ],
+          "note": "Electron-donating effect"
+        },
+        {
+          "substituent": "-NO2",
+          "position_of_substituent": "3",
+          "delta_shift": 3.2,
+          "new_range": [
+            142.2,
+            145.2
+          ],
+          "note": "Strong electron-withdrawing"
+        },
+        {
+          "substituent": "-OMe",
+          "position_of_substituent": "3",
+          "delta_shift": -4.8,
+          "new_range": [
+            134.2,
+            137.2
+          ],
+          "note": "Strong electron-donating"
+        },
+        {
+          "substituent": "-Cl",
+          "position_of_substituent": "4",
+          "delta_shift": 1.5,
+          "new_range": [
+            140.5,
+            143.5
+          ],
+          "note": "Weak electron-withdrawing"
+        },
+        {
+          "substituent": "-CF3",
+          "position_of_substituent": "5",
+          "delta_shift": 2.8,
+          "new_range": [
+            142.0,
+            145.0
+          ],
+          "note": "Electron-withdrawing effect"
+        },
+        {
+          "substituent": "-NH2",
+          "position_of_substituent": "5",
+          "delta_shift": -3.2,
+          "new_range": [
+            136.0,
+            139.0
+          ],
+          "note": "Electron-donating effect"
+        }
+      ]
+    },
+    "3": {
+      "base_shift": 130.8,
+      "range": [
+        129.5,
+        132.0
+      ],
+      "carbon_type": "CH",
+      "dept_phase": "up",
+      "substituent_effects": [
+        {
+          "substituent": "-Ph",
+          "position_of_substituent": "4",
+          "delta_shift": 2.1,
+          "new_range": [
+            131.6,
+            134.1
+          ],
+          "note": "Aromatic deshielding"
+        },
+        {
+          "substituent": "-NO2",
+          "position_of_substituent": "4",
+          "delta_shift": 4.5,
+          "new_range": [
+            134.0,
+            136.5
+          ],
+          "note": "Strong deshielding"
+        },
+        {
+          "substituent": "-OMe",
+          "position_of_substituent": "4",
+          "delta_shift": -1.8,
+          "new_range": [
+            127.7,
+            130.2
+          ],
+          "note": "Electron-donating shielding"
+        },
+        {
+          "substituent": "-Cl",
+          "position_of_substituent": "4",
+          "delta_shift": 1.2,
+          "new_range": [
+            130.7,
+            133.2
+          ],
+          "note": "Weak deshielding"
+        },
+        {
+          "substituent": "-CF3",
+          "position_of_substituent": "5",
+          "delta_shift": 3.8,
+          "new_range": [
+            133.3,
+            135.8
+          ],
+          "note": "Strong electron-withdrawing"
+        },
+        {
+          "substituent": "-Br",
+          "position_of_substituent": "4",
+          "delta_shift": 1.8,
+          "new_range": [
+            131.3,
+            133.8
+          ],
+          "note": "Halogen deshielding"
+        }
+      ]
+    },
+    "4": {
+      "base_shift": 104.2,
+      "range": [
+        103.0,
+        105.5
+      ],
+      "carbon_type": "CH",
+      "dept_phase": "up",
+      "substituent_effects": [
+        {
+          "substituent": "-Ph",
+          "position_of_substituent": "3",
+          "delta_shift": 1.8,
+          "new_range": [
+            104.8,
+            107.3
+          ],
+          "note": "Aromatic effect"
+        },
+        {
+          "substituent": "-NO2",
+          "position_of_substituent": "3",
+          "delta_shift": 3.5,
+          "new_range": [
+            106.5,
+            109.0
+          ],
+          "note": "Electron-withdrawing"
+        },
+        {
+          "substituent": "-OMe",
+          "position_of_substituent": "3",
+          "delta_shift": -2.2,
+          "new_range": [
+            101.0,
+            103.3
+          ],
+          "note": "Electron-donating"
+        },
+        {
+          "substituent": "-Cl",
+          "position_of_substituent": "5",
+          "delta_shift": 2.1,
+          "new_range": [
+            105.1,
+            107.6
+          ],
+          "note": "Halogen effect"
+        },
+        {
+          "substituent": "-CF3",
+          "position_of_substituent": "5",
+          "delta_shift": 4.2,
+          "new_range": [
+            107.2,
+            109.7
+          ],
+          "note": "Strong electron-withdrawing"
+        },
+        {
+          "substituent": "-NH2",
+          "position_of_substituent": "5",
+          "delta_shift": -1.5,
+          "new_range": [
+            101.5,
+            104.0
+          ],
+          "note": "Electron-donating"
+        }
+      ]
+    },
+    "5": {
+      "base_shift": 127.5,
+      "range": [
+        126.0,
+        129.0
+      ],
+      "carbon_type": "CH",
+      "dept_phase": "up",
+      "substituent_effects": [
+        {
+          "substituent": "-Ph",
+          "position_of_substituent": "3",
+          "delta_shift": 0.8,
+          "new_range": [
+            126.8,
+            129.8
+          ],
+          "note": "Weak aromatic effect"
+        },
+        {
+          "substituent": "-NO2",
+          "position_of_substituent": "3",
+          "delta_shift": 2.5,
+          "new_range": [
+            128.5,
+            131.5
+          ],
+          "note": "Electron-withdrawing"
+        },
+        {
+          "substituent": "-OMe",
+          "position_of_substituent": "3",
+          "delta_shift": -1.2,
+          "new_range": [
+            124.8,
+            127.8
+          ],
+          "note": "Electron-donating"
+        },
+        {
+          "substituent": "-Cl",
+          "position_of_substituent": "4",
+          "delta_shift": 1.5,
+          "new_range": [
+            127.5,
+            130.5
+          ],
+          "note": "Halogen deshielding"
+        },
+        {
+          "substituent": "-CF3",
+          "position_of_substituent": "4",
+          "delta_shift": 3.8,
+          "new_range": [
+            129.8,
+            132.8
+          ],
+          "note": "Strong electron-withdrawing"
+        },
+        {
+          "substituent": "-Br",
+          "position_of_substituent": "4",
+          "delta_shift": 2.2,
+          "new_range": [
+            128.2,
+            131.2
+          ],
+          "note": "Heavy halogen effect"
+        }
+      ]
+    }
+  },
+  "ir_bands": {
+    "present": [
+      {
+        "band_range": [
+          3100,
+          3300
+        ],
+        "intensity": "medium-broad",
+        "assignment": "N-H stretch"
+      },
+      {
+        "band_range": [
+          1580,
+          1620
+        ],
+        "intensity": "strong",
+        "assignment": "C=N stretch"
+      },
+      {
+        "band_range": [
+          1480,
+          1520
+        ],
+        "intensity": "medium",
+        "assignment": "C=C stretch"
+      },
+      {
+        "band_range": [
+          1040,
+          1080
+        ],
+        "intensity": "medium",
+        "assignment": "C-N stretch"
+      },
+      {
+        "band_range": [
+          750,
+          850
+        ],
+        "intensity": "strong",
+        "assignment": "C-H out-of-plane bend"
+      }
+    ],
+    "absent": [
+      {
+        "band_range": [
+          1650,
+          1750
+        ],
+        "assignment": "C=O stretch",
+        "significance": "Distinguishes from pyrazolones"
+      },
+      {
+        "band_range": [
+          2200,
+          2300
+        ],
+        "assignment": "C≡N stretch",
+        "significance": "Rules out nitrile substitution"
+      }
+    ]
+  },
+  "diagnostic_features": [
+    "NH proton appears as broad singlet at 12.5-14.0 ppm, exchangeable with D2O",
+    "H-3 appears as doublet at 7.4-7.9 ppm with small coupling (J ~2 Hz)",
+    "H-4 appears as triplet at 6.1-6.4 ppm, most upfield aromatic proton",
+    "H-5 appears as doublet at 7.2-7.7 ppm, similar to H-3 but slightly upfield",
+    "C-2 quaternary carbon at 139-142 ppm, absent in DEPT",
+    "Characteristic IR N-H stretch at 3100-3300 cm⁻¹ and C=N at 1580-1620 cm⁻¹"
+  ]
+}

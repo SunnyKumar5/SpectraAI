@@ -1,0 +1,35 @@
+{
+  "scaffold": "indole",
+  "display_name": "1H-Indole",
+  "core_smiles": "c1ccc2[nH]ccc2c1",
+  "diagnostic_features": [
+    "N-H broad singlet at δ 7.80–10.50 (solvent-dependent)",
+    "H-2 singlet or doublet at δ 6.40–7.50",
+    "H-3 at δ 6.40–7.80 (depends on substitution)",
+    "N-H stretch in IR near 3400 cm⁻¹"
+  ],
+  "h1_reference": {
+    "N-H":  {"range": [7.80, 10.50], "multiplicity": "br s", "note": "solvent-dependent, exchanges with D2O"},
+    "H-2":  {"range": [6.40, 7.50], "multiplicity": "s or d", "note": "sensitive to C-3 substitution"},
+    "H-3":  {"range": [6.40, 7.80], "multiplicity": "d or s", "note": "sensitive to C-2 substitution"},
+    "H-4":  {"range": [7.30, 7.70], "multiplicity": "d", "note": "J ~7–8 Hz, peri to N-H"},
+    "H-5":  {"range": [6.95, 7.25], "multiplicity": "t", "note": "J ~7–8 Hz"},
+    "H-6":  {"range": [7.00, 7.30], "multiplicity": "t", "note": "J ~7–8 Hz"},
+    "H-7":  {"range": [7.25, 7.55], "multiplicity": "d", "note": "J ~8 Hz"}
+  },
+  "c13_reference": {
+    "C-2":  {"range": [123, 142], "note": "CH or quaternary (varies with substitution)"},
+    "C-3":  {"range": [97, 120], "note": "CH or quaternary"},
+    "C-3a": {"range": [127, 132], "note": "quaternary, ring junction"},
+    "C-4":  {"range": [119, 122], "note": "CH"},
+    "C-5":  {"range": [119, 123], "note": "CH"},
+    "C-6":  {"range": [120, 124], "note": "CH"},
+    "C-7":  {"range": [110, 115], "note": "CH"},
+    "C-7a": {"range": [135, 140], "note": "quaternary, ring junction"}
+  },
+  "expected_ir_present": [
+    "N-H stretch (3380-3420 cm⁻¹, medium)",
+    "aromatic C-H (3050 cm⁻¹)",
+    "C=C aromatic (1580-1620 cm⁻¹)"
+  ]
+}

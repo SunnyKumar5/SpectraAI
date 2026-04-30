@@ -1,0 +1,26 @@
+{
+  "scaffold": "triazole",
+  "display_name": "1,2,3-Triazole",
+  "core_smiles": "c1cnnn1",
+  "diagnostic_features": [
+    "Triazole H-5 singlet at δ 7.40–8.50 (1,4-disubstituted)",
+    "C-4 quaternary at δ 143–150",
+    "C-5 at δ 119–128 for CH",
+    "N-CH₂ if N-benzyl present at δ 5.40–5.60"
+  ],
+  "h1_reference": {
+    "H-5":    {"range": [7.40, 8.50], "multiplicity": "s", "note": "triazole CH, diagnostic singlet"},
+    "N-CH2":  {"range": [5.40, 5.60], "multiplicity": "s", "note": "N-benzyl methylene"},
+    "N-CH3":  {"range": [4.00, 4.20], "multiplicity": "s", "note": "N-methyl if present"}
+  },
+  "c13_reference": {
+    "C-4":  {"range": [143, 150], "note": "quaternary, bears substituent"},
+    "C-5":  {"range": [119, 128], "note": "CH triazole ring carbon"},
+    "N-CH2": {"range": [52, 56], "note": "N-benzyl methylene carbon"}
+  },
+  "expected_ir_present": [
+    "triazole C-H stretch (~3130 cm⁻¹)",
+    "N=N stretch (1220-1250 cm⁻¹)",
+    "C-N stretch (1040-1060 cm⁻¹)"
+  ]
+}

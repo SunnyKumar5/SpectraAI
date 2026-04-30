@@ -1,0 +1,31 @@
+{
+  "scaffold": "quinazoline",
+  "display_name": "Quinazoline",
+  "core_smiles": "c1ccc2ncncc2c1",
+  "diagnostic_features": [
+    "H-2 highly deshielded singlet at δ 8.80–9.50",
+    "C-2 at δ 148–165 and C-4 at δ 155–168 (both diagnostic)",
+    "Absence of N-H if fully substituted quinazoline"
+  ],
+  "h1_reference": {
+    "H-2":  {"range": [8.80, 9.50], "multiplicity": "s", "note": "highly deshielded, diagnostic"},
+    "H-5":  {"range": [7.60, 8.30], "multiplicity": "d", "note": "J ~8 Hz"},
+    "H-6":  {"range": [7.30, 7.80], "multiplicity": "t", "note": "J ~7–8 Hz"},
+    "H-7":  {"range": [7.60, 8.10], "multiplicity": "t", "note": "J ~7–8 Hz"},
+    "H-8":  {"range": [7.40, 7.80], "multiplicity": "d", "note": "J ~8 Hz"}
+  },
+  "c13_reference": {
+    "C-2":  {"range": [148, 165], "note": "diagnostic, N=C-N carbon"},
+    "C-4":  {"range": [155, 168], "note": "diagnostic, varies with substituent"},
+    "C-4a": {"range": [120, 128], "note": "quaternary, ring junction"},
+    "C-5":  {"range": [126, 135], "note": "CH"},
+    "C-6":  {"range": [125, 130], "note": "CH"},
+    "C-7":  {"range": [133, 140], "note": "CH"},
+    "C-8":  {"range": [126, 132], "note": "CH"},
+    "C-8a": {"range": [148, 155], "note": "quaternary, ring junction"}
+  },
+  "expected_ir_present": [
+    "C=N stretch (1610-1630 cm⁻¹)",
+    "C=C aromatic (1560-1580 cm⁻¹)"
+  ]
+}

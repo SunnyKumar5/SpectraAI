@@ -1,0 +1,33 @@
+{
+  "scaffold": "imidazopyridine",
+  "display_name": "Imidazo[1,2-a]pyridine",
+  "core_smiles": "c1ccn2ccnc2c1",
+  "diagnostic_features": [
+    "H-3 singlet between δ 7.40–8.60 (bridgehead diagnostic)",
+    "H-5 downfield doublet near δ 7.50–8.60",
+    "C-2 quaternary carbon at δ 141–150",
+    "Absence of N-H stretch in IR (fused N-bridge)"
+  ],
+  "h1_reference": {
+    "H-3":  {"range": [7.40, 8.60], "multiplicity": "s", "note": "bridgehead, diagnostic singlet"},
+    "H-5":  {"range": [7.50, 8.60], "multiplicity": "d", "note": "J ~6–7 Hz, pyridine ring"},
+    "H-6":  {"range": [6.70, 7.30], "multiplicity": "t", "note": "J ~6–7 Hz"},
+    "H-7":  {"range": [7.00, 7.50], "multiplicity": "t", "note": "J ~7–8 Hz"},
+    "H-8":  {"range": [7.40, 7.90], "multiplicity": "d", "note": "J ~9 Hz, peri to N"}
+  },
+  "c13_reference": {
+    "C-2":  {"range": [141, 150], "note": "quaternary, diagnostic"},
+    "C-3":  {"range": [108, 120], "note": "CH, bridgehead carbon"},
+    "C-5":  {"range": [122, 128], "note": "CH"},
+    "C-6":  {"range": [112, 118], "note": "CH"},
+    "C-7":  {"range": [124, 130], "note": "CH"},
+    "C-8":  {"range": [115, 120], "note": "CH"},
+    "C-8a": {"range": [143, 150], "note": "quaternary, bridgehead junction"}
+  },
+  "expected_ir_absent": ["N-H stretch (3200-3500 cm⁻¹)"],
+  "expected_ir_present": [
+    "aromatic C-H stretch (3000-3100 cm⁻¹)",
+    "C=N stretch (~1480-1520 cm⁻¹)",
+    "C=C aromatic (1580-1620 cm⁻¹)"
+  ]
+}

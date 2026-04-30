@@ -1,0 +1,79 @@
+{
+  "compound_id": "SPEC-001",
+  "name": "3-(4-Methoxyphenyl)imidazo[1,2-a]pyridine",
+  "smiles": "COc1ccc(-c2cnc3ccccn23)cc1",
+  "formula": "C14H12N2O",
+  "molecular_weight": 224.2610,
+  "metadata": {
+    "scaffold_family": "imidazopyridine",
+    "reaction_type": "Groebke-Blackburn-Bienayme MCR",
+    "catalyst": "ZnCl2",
+    "solvent_media": "ethanol",
+    "is_ionic_liquid": false,
+    "source_paper": "Pericherla et al., Synthesis 2015, 47, 887-912",
+    "notes": "Model compound for imidazopyridine scaffold"
+  },
+  "h1_nmr": {
+    "nucleus": "1H",
+    "frequency": 400,
+    "solvent": "CDCl3",
+    "peaks": [
+      {"shift": 8.15, "multiplicity": "d", "J": [6.8], "integration": 1.0, "assignment": "H-5"},
+      {"shift": 7.85, "multiplicity": "d", "J": [8.6], "integration": 2.0, "assignment": "ArH (2',6')"},
+      {"shift": 7.68, "multiplicity": "s", "J": [], "integration": 1.0, "assignment": "H-3"},
+      {"shift": 7.58, "multiplicity": "d", "J": [9.0], "integration": 1.0, "assignment": "H-8"},
+      {"shift": 7.18, "multiplicity": "t", "J": [7.8], "integration": 1.0, "assignment": "H-7"},
+      {"shift": 6.98, "multiplicity": "d", "J": [8.6], "integration": 2.0, "assignment": "ArH (3',5')"},
+      {"shift": 6.78, "multiplicity": "t", "J": [6.8], "integration": 1.0, "assignment": "H-6"},
+      {"shift": 3.85, "multiplicity": "s", "J": [], "integration": 3.0, "assignment": "OCH3"}
+    ],
+    "raw_text": "1H NMR (400 MHz, CDCl3): δ 8.15 (d, J = 6.8 Hz, 1H, H-5), 7.85 (d, J = 8.6 Hz, 2H, ArH), 7.68 (s, 1H, H-3), 7.58 (d, J = 9.0 Hz, 1H, H-8), 7.18 (t, J = 7.8 Hz, 1H, H-7), 6.98 (d, J = 8.6 Hz, 2H, ArH), 6.78 (t, J = 6.8 Hz, 1H, H-6), 3.85 (s, 3H, OCH3)"
+  },
+  "c13_nmr": {
+    "nucleus": "13C",
+    "frequency": 100,
+    "solvent": "CDCl3",
+    "peaks": [
+      {"shift": 159.7, "multiplicity": "s", "assignment": "C-4' (ArC-OCH3)"},
+      {"shift": 146.2, "multiplicity": "s", "assignment": "C-8a"},
+      {"shift": 145.0, "multiplicity": "s", "assignment": "C-2"},
+      {"shift": 127.5, "multiplicity": "s", "assignment": "C-2',6'"},
+      {"shift": 125.6, "multiplicity": "s", "assignment": "C-7"},
+      {"shift": 125.1, "multiplicity": "s", "assignment": "C-1'"},
+      {"shift": 124.5, "multiplicity": "s", "assignment": "C-5"},
+      {"shift": 117.6, "multiplicity": "s", "assignment": "C-8"},
+      {"shift": 114.5, "multiplicity": "s", "assignment": "C-3',5'"},
+      {"shift": 112.4, "multiplicity": "s", "assignment": "C-6"},
+      {"shift": 109.6, "multiplicity": "s", "assignment": "C-3"},
+      {"shift": 55.4, "multiplicity": "s", "assignment": "OCH3"}
+    ],
+    "raw_text": "13C NMR (100 MHz, CDCl3): δ 159.7, 146.2, 145.0, 127.5, 125.6, 125.1, 124.5, 117.6, 114.5, 112.4, 109.6, 55.4"
+  },
+  "ir": {
+    "method": "KBr",
+    "absorptions": [
+      {"wavenumber": 3051, "intensity": "w", "assignment": "aromatic C-H"},
+      {"wavenumber": 2956, "intensity": "w", "assignment": "C-H sp3"},
+      {"wavenumber": 2835, "intensity": "w", "assignment": "OCH3 C-H"},
+      {"wavenumber": 1612, "intensity": "m", "assignment": "C=C aromatic"},
+      {"wavenumber": 1510, "intensity": "s", "assignment": "C=C aromatic"},
+      {"wavenumber": 1481, "intensity": "m", "assignment": "C=N"},
+      {"wavenumber": 1249, "intensity": "s", "assignment": "C-O-C"},
+      {"wavenumber": 1177, "intensity": "m", "assignment": "C-O"},
+      {"wavenumber": 1030, "intensity": "m", "assignment": "C-O"},
+      {"wavenumber": 835, "intensity": "m", "assignment": "para-subst ArH"}
+    ],
+    "raw_text": "IR (KBr): 3051, 2956, 2835, 1612, 1510, 1481, 1249, 1177, 1030, 835 cm-1"
+  },
+  "hrms": {
+    "technique": "ESI",
+    "ion_type": "[M+H]+",
+    "calculated_mz": 225.1022,
+    "observed_mz": 225.1019,
+    "formula": "C14H12N2O",
+    "ion_formula": "C14H13N2O",
+    "raw_text": "HRMS (ESI) m/z calcd for C14H13N2O [M+H]+ 225.1022, found 225.1019"
+  },
+  "melting_point": [142, 144],
+  "elemental_analysis": null
+}

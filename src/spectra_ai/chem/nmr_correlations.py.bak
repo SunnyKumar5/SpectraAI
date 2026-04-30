@@ -1,0 +1,470 @@
+"""
+NMRCorrelationPredictor -- Predicts 2D NMR correlations (COSY, HSQC, HMBC)
+from molecular structure and 1D NMR peak assignments.
+
+These are PREDICTED correlations computed from the molecular graph
+(bond-path distances via RDKit) and the atom-peak mappings produced
+by AtomMapper after AI interpretation.
+"""
+
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+from typing import Optional
+
+try:
+    from rdkit import Chem
+    _HAS_RDKIT = True
+except ImportError:
+    _HAS_RDKIT = False
+
+
+# ---------------------------------------------------------------------------
+#  Data classes
+# ---------------------------------------------------------------------------
+
+@dataclass
+class Correlation:
+    """A single predicted 2D NMR correlation."""
+
+    h_shift: float          # x-axis (1H ppm)
+    x_shift: float          # y-axis (partner: 1H for COSY, 13C for HSQC/HMBC)
+    h_atom_idx: int         # RDKit atom index of the proton (or its parent C)
+    x_atom_idx: int         # partner atom index
+    h_label: str = ""       # e.g. "H-3"
+    x_label: str = ""       # e.g. "C-3" or "H-7"
+    corr_type: str = ""     # "COSY", "HSQC", "HMBC"
+    bond_path: int = 0
+    confidence: str = "Medium"   # "High", "Medium", "Low"
+    is_diagonal: bool = False
+
+    @property
+    def display_text(self) -> str:
+        unit = "ppm"
+        partner = "1H" if self.corr_type == "COSY" else "13C"
+        return (
+            f"{self.h_label}: d {self.h_shift:.2f} {unit}  |  "
+            f"{self.x_label}: d {self.x_shift:.2f} {unit}  "
+            f"({self.bond_path}-bond, {self.confidence})"
+        )
+
+
+@dataclass
+class CorrelationMap:
+    """Complete set of predicted correlations for one experiment type."""
+
+    corr_type: str                          # "COSY", "HSQC", "HMBC"
+    correlations: list[Correlation] = field(default_factory=list)
+    h_axis_label: str = ""
+    y_axis_label: str = ""
+    h_range: tuple[float, float] = (0.0, 12.0)
+    y_range: tuple[float, float] = (0.0, 12.0)
+    message: str = ""                       # non-empty when prediction not possible
+
+
+# ---------------------------------------------------------------------------
+#  Predictor
+# ---------------------------------------------------------------------------
+
+class NMRCorrelationPredictor:
+    """
+    Predicts 2D NMR correlations from molecular structure + 1D NMR
+    peak assignments.
+
+    Parameters
+    ----------
+    smiles : str
+    h1_mappings : list  -- AtomPeakMapping objects for 1H
+    c13_mappings : list -- AtomPeakMapping objects for 13C (may be empty)
+    h1_data : NMRData | None
+    c13_data : NMRData | None
+    """
+
+    def __init__(
+        self,
+        smiles: str,
+        h1_mappings: list,
+        c13_mappings: list,
+        h1_data=None,
+        c13_data=None,
+    ):
+        self._smiles = smiles
+        self._h1_map = h1_mappings or []
+        self._c13_map = c13_mappings or []
+        self._h1_data = h1_data
+        self._c13_data = c13_data
+        self._mol = None
+        self._mol_h = None
+
+        if _HAS_RDKIT and smiles:
+            self._mol = Chem.MolFromSmiles(smiles)
+            if self._mol is not None:
+                self._mol_h = Chem.AddHs(self._mol)
+
+    # ------------------------------------------------------------------
+    #  Public API
+    # ------------------------------------------------------------------
+
+    def predict_all(self) -> dict[str, CorrelationMap]:
+        return {
+            "COSY": self.predict_cosy(),
+            "HSQC": self.predict_hsqc(),
+            "HMBC": self.predict_hmbc(),
+        }
+
+    def predict_cosy(self) -> CorrelationMap:
+        if self._mol is None:
+            return CorrelationMap(
+                corr_type="COSY",
+                message="Valid SMILES required for COSY prediction.",
+            )
+
+        mol = self._mol
+        h_shifts = self._build_h_shift_map()
+        if not h_shifts:
+            return CorrelationMap(
+                corr_type="COSY",
+                message="No 1H peak assignments available.",
+            )
+
+        correlations: list[Correlation] = []
+        seen_pairs: set[tuple[int, int]] = set()
+
+        # Find all heavy-atom pairs bearing H, separated by 2-3 bonds
+        h_bearing = self._get_h_bearing_atoms()
+
+        for i in h_bearing:
+            for j in h_bearing:
+                if i >= j:
+                    continue
+                pair = (i, j)
+                if pair in seen_pairs:
+                    continue
+                seen_pairs.add(pair)
+
+                path = Chem.GetShortestPath(mol, i, j)
+                if path is None:
+                    continue
+                n_bonds = len(path) - 1
+                if n_bonds not in (1, 2, 3):
+                    continue
+                # Geminal (2J) only for CH2-type
+                if n_bonds == 1:
+                    continue  # 2J geminal — skip for simplicity
+
+                h_shift_i, conf_i = self._get_h_shift(i, h_shifts)
+                h_shift_j, conf_j = self._get_h_shift(j, h_shifts)
+                if h_shift_i is None or h_shift_j is None:
+                    continue
+
+                conf = self._combine_confidence(conf_i, conf_j)
+                lbl_i = self._atom_label(i, "H")
+                lbl_j = self._atom_label(j, "H")
+
+                # Symmetric pair: (i,j) and (j,i)
+                correlations.append(Correlation(
+                    h_shift=h_shift_i, x_shift=h_shift_j,
+                    h_atom_idx=i, x_atom_idx=j,
+                    h_label=lbl_i, x_label=lbl_j,
+                    corr_type="COSY", bond_path=n_bonds + 1,
+                    confidence=conf,
+                ))
+                correlations.append(Correlation(
+                    h_shift=h_shift_j, x_shift=h_shift_i,
+                    h_atom_idx=j, x_atom_idx=i,
+                    h_label=lbl_j, x_label=lbl_i,
+                    corr_type="COSY", bond_path=n_bonds + 1,
+                    confidence=conf,
+                ))
+
+        # Diagonal peaks
+        all_shifts: set[float] = set()
+        for m in self._h1_map:
+            if m.shift > 0:
+                all_shifts.add(m.shift)
+        for s in all_shifts:
+            correlations.append(Correlation(
+                h_shift=s, x_shift=s,
+                h_atom_idx=-1, x_atom_idx=-1,
+                corr_type="COSY", bond_path=0,
+                confidence="High", is_diagonal=True,
+            ))
+
+        h_range, y_range = self._compute_h_range(correlations)
+        return CorrelationMap(
+            corr_type="COSY",
+            correlations=correlations,
+            h_axis_label="1H d (ppm)",
+            y_axis_label="1H d (ppm)",
+            h_range=h_range,
+            y_range=y_range,
+        )
+
+    def predict_hsqc(self) -> CorrelationMap:
+        if self._mol is None:
+            return CorrelationMap(
+                corr_type="HSQC",
+                message="Valid SMILES required for HSQC prediction.",
+            )
+
+        c13_shifts = self._build_c13_shift_map()
+        h_shifts = self._build_h_shift_map()
+
+        if not c13_shifts and not self._c13_data:
+            return CorrelationMap(
+                corr_type="HSQC",
+                message="13C NMR data is required to generate HSQC maps.\n"
+                        "Provide 13C NMR peaks in the input panel.",
+            )
+
+        mol = self._mol
+        correlations: list[Correlation] = []
+
+        for atom in mol.GetAtoms():
+            if atom.GetAtomicNum() != 6:
+                continue
+            c_idx = atom.GetIdx()
+            num_hs = atom.GetTotalNumHs()
+            if num_hs == 0:
+                continue
+
+            c_shift, c_conf = self._get_c13_shift(c_idx, c13_shifts)
+            h_shift, h_conf = self._get_h_shift(c_idx, h_shifts)
+            if c_shift is None or h_shift is None:
+                continue
+
+            conf = self._combine_confidence(c_conf, h_conf)
+            h_lbl = self._atom_label(c_idx, "H")
+            c_lbl = self._atom_label(c_idx, "C")
+
+            correlations.append(Correlation(
+                h_shift=h_shift, x_shift=c_shift,
+                h_atom_idx=c_idx, x_atom_idx=c_idx,
+                h_label=h_lbl, x_label=c_lbl,
+                corr_type="HSQC", bond_path=1,
+                confidence=conf,
+            ))
+
+        h_range = self._compute_axis_range(
+            [c.h_shift for c in correlations], margin=0.5
+        )
+        y_range = self._compute_axis_range(
+            [c.x_shift for c in correlations], margin=5.0
+        )
+        return CorrelationMap(
+            corr_type="HSQC",
+            correlations=correlations,
+            h_axis_label="1H d (ppm)",
+            y_axis_label="13C d (ppm)",
+            h_range=h_range,
+            y_range=y_range,
+        )
+
+    def predict_hmbc(self) -> CorrelationMap:
+        if self._mol is None:
+            return CorrelationMap(
+                corr_type="HMBC",
+                message="Valid SMILES required for HMBC prediction.",
+            )
+
+        c13_shifts = self._build_c13_shift_map()
+        h_shifts = self._build_h_shift_map()
+
+        if not c13_shifts and not self._c13_data:
+            return CorrelationMap(
+                corr_type="HMBC",
+                message="13C NMR data is required to generate HMBC maps.\n"
+                        "Provide 13C NMR peaks in the input panel.",
+            )
+
+        mol = self._mol
+        correlations: list[Correlation] = []
+        seen: set[tuple[int, int]] = set()
+
+        h_bearing = self._get_h_bearing_atoms()
+        carbon_indices = [
+            a.GetIdx() for a in mol.GetAtoms() if a.GetAtomicNum() == 6
+        ]
+
+        for h_idx in h_bearing:
+            for c_idx in carbon_indices:
+                if h_idx == c_idx:
+                    continue
+                pair = (h_idx, c_idx)
+                if pair in seen:
+                    continue
+                seen.add(pair)
+
+                path = Chem.GetShortestPath(mol, h_idx, c_idx)
+                if path is None:
+                    continue
+                n_bonds = len(path) - 1
+                if n_bonds not in (2, 3):
+                    continue
+
+                h_shift, h_conf = self._get_h_shift(h_idx, h_shifts)
+                c_shift, c_conf = self._get_c13_shift(c_idx, c13_shifts)
+                if h_shift is None or c_shift is None:
+                    continue
+
+                conf = self._combine_confidence(h_conf, c_conf)
+                h_lbl = self._atom_label(h_idx, "H")
+                c_lbl = self._atom_label(c_idx, "C")
+
+                correlations.append(Correlation(
+                    h_shift=h_shift, x_shift=c_shift,
+                    h_atom_idx=h_idx, x_atom_idx=c_idx,
+                    h_label=h_lbl, x_label=c_lbl,
+                    corr_type="HMBC", bond_path=n_bonds,
+                    confidence=conf,
+                ))
+
+        h_range = self._compute_axis_range(
+            [c.h_shift for c in correlations], margin=0.5
+        )
+        y_range = self._compute_axis_range(
+            [c.x_shift for c in correlations], margin=5.0
+        )
+        return CorrelationMap(
+            corr_type="HMBC",
+            correlations=correlations,
+            h_axis_label="1H d (ppm)",
+            y_axis_label="13C d (ppm)",
+            h_range=h_range,
+            y_range=y_range,
+        )
+
+    # ------------------------------------------------------------------
+    #  Shift lookup helpers
+    # ------------------------------------------------------------------
+
+    def _build_h_shift_map(self) -> dict[int, tuple[float, str]]:
+        """Map heavy-atom index -> (1H shift, confidence)."""
+        result: dict[int, tuple[float, str]] = {}
+        for m in self._h1_map:
+            for idx in m.atom_indices:
+                if idx not in result:
+                    result[idx] = (m.shift, m.confidence)
+        return result
+
+    def _build_c13_shift_map(self) -> dict[int, tuple[float, str]]:
+        """Map carbon index -> (13C shift, confidence)."""
+        result: dict[int, tuple[float, str]] = {}
+        for m in self._c13_map:
+            for idx in m.atom_indices:
+                if idx not in result:
+                    result[idx] = (m.shift, m.confidence)
+        return result
+
+    def _get_h_shift(
+        self, heavy_idx: int, h_map: dict
+    ) -> tuple[Optional[float], str]:
+        """Get 1H shift for a heavy atom. Falls back to estimation."""
+        if heavy_idx in h_map:
+            return h_map[heavy_idx]
+        # Check if any H on this atom is mapped (mol_h indices)
+        if self._mol_h:
+            atom = self._mol_h.GetAtomWithIdx(heavy_idx)
+            for nb in atom.GetNeighbors():
+                if nb.GetAtomicNum() == 1 and nb.GetIdx() in h_map:
+                    return h_map[nb.GetIdx()]
+        # Estimate
+        return self._estimate_h_shift(heavy_idx)
+
+    def _get_c13_shift(
+        self, c_idx: int, c_map: dict
+    ) -> tuple[Optional[float], str]:
+        """Get 13C shift for a carbon. Falls back to estimation."""
+        if c_idx in c_map:
+            return c_map[c_idx]
+        return self._estimate_c13_shift(c_idx)
+
+    def _estimate_h_shift(self, idx: int) -> tuple[Optional[float], str]:
+        if self._mol is None:
+            return (None, "Low")
+        atom = self._mol.GetAtomWithIdx(idx)
+        if atom.GetIsAromatic():
+            return (7.5, "Low")
+        # Check attached heteroatoms
+        for nb in atom.GetNeighbors():
+            if nb.GetAtomicNum() in (7, 8, 16):
+                return (3.5, "Low")
+        return (2.0, "Low")
+
+    def _estimate_c13_shift(self, idx: int) -> tuple[Optional[float], str]:
+        if self._mol is None:
+            return (None, "Low")
+        atom = self._mol.GetAtomWithIdx(idx)
+        if atom.GetAtomicNum() != 6:
+            return (None, "Low")
+        if atom.GetIsAromatic():
+            return (125.0, "Low")
+        # sp2 carbonyl
+        for nb in atom.GetNeighbors():
+            bond = self._mol.GetBondBetweenAtoms(idx, nb.GetIdx())
+            if bond and bond.GetBondTypeAsDouble() == 2.0:
+                if nb.GetAtomicNum() == 8:
+                    return (170.0, "Low")
+                return (130.0, "Low")
+        # O-attached
+        for nb in atom.GetNeighbors():
+            if nb.GetAtomicNum() == 8:
+                return (65.0, "Low")
+        num_hs = atom.GetTotalNumHs()
+        if num_hs >= 3:
+            return (20.0, "Low")
+        if num_hs == 2:
+            return (35.0, "Low")
+        return (40.0, "Low")
+
+    # ------------------------------------------------------------------
+    #  Molecular graph helpers
+    # ------------------------------------------------------------------
+
+    def _get_h_bearing_atoms(self) -> list[int]:
+        """Return heavy-atom indices that bear at least one hydrogen."""
+        if self._mol is None:
+            return []
+        result = []
+        for atom in self._mol.GetAtoms():
+            if atom.GetTotalNumHs() > 0:
+                result.append(atom.GetIdx())
+        return result
+
+    def _atom_label(self, idx: int, prefix: str) -> str:
+        """Generate a label like 'H-3' or 'C-5' (1-based)."""
+        if self._mol is None:
+            return f"{prefix}-{idx}"
+        atom = self._mol.GetAtomWithIdx(idx)
+        return f"{prefix}-{idx + 1}"
+
+    @staticmethod
+    def _combine_confidence(c1: str, c2: str) -> str:
+        order = {"high": 2, "medium": 1, "low": 0}
+        v1 = order.get(c1.lower(), 1)
+        v2 = order.get(c2.lower(), 1)
+        m = min(v1, v2)
+        return ["Low", "Medium", "High"][m]
+
+    @staticmethod
+    def _compute_h_range(
+        correlations: list[Correlation],
+    ) -> tuple[tuple[float, float], tuple[float, float]]:
+        if not correlations:
+            return ((0.0, 12.0), (0.0, 12.0))
+        h_vals = [c.h_shift for c in correlations]
+        x_vals = [c.x_shift for c in correlations]
+        all_vals = h_vals + x_vals
+        lo = min(all_vals) - 0.5
+        hi = max(all_vals) + 0.5
+        return ((hi, lo), (hi, lo))  # inverted for NMR convention
+
+    @staticmethod
+    def _compute_axis_range(
+        values: list[float], margin: float = 0.5
+    ) -> tuple[float, float]:
+        if not values:
+            return (0.0, 12.0)
+        lo = min(values) - margin
+        hi = max(values) + margin
+        return (hi, lo)  # inverted for NMR convention

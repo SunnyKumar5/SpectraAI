@@ -1,0 +1,142 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "shift_reference.schema.json",
+  "title": "Scaffold-Specific NMR Shift Reference",
+  "description": "Position-specific NMR chemical shifts for a heterocyclic scaffold, including substituent effects at each position.",
+  "type": "object",
+  "required": ["scaffold_id", "scaffold_name", "core_smiles", "positions", "h1_shifts", "c13_shifts"],
+  "properties": {
+    "scaffold_id": {
+      "type": "string",
+      "description": "e.g. SCAF-001"
+    },
+    "scaffold_name": {
+      "type": "string"
+    },
+    "display_name": {
+      "type": "string"
+    },
+    "core_smiles": {
+      "type": "string"
+    },
+    "core_smarts": {
+      "type": "string",
+      "description": "SMARTS pattern for substructure matching"
+    },
+    "numbering_image_ref": {
+      "type": "string",
+      "description": "Optional reference to a numbering diagram"
+    },
+    "positions": {
+      "type": "object",
+      "description": "Maps position labels to atom properties",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "atom_type": {"type": "string", "description": "C, N, O, etc."},
+          "hybridization": {"type": "string", "enum": ["sp2", "sp3", "sp"]},
+          "is_ring_junction": {"type": "boolean"},
+          "is_bridgehead": {"type": "boolean"},
+          "substitutable": {"type": "boolean"},
+          "default_H_count": {"type": "integer"},
+          "notes": {"type": "string"}
+        }
+      }
+    },
+    "h1_shifts": {
+      "type": "object",
+      "description": "1H NMR shift data keyed by position label",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "base_shift": {"type": "number", "description": "Unsubstituted scaffold shift"},
+          "range": {"type": "array", "items": {"type": "number"}, "minItems": 2, "maxItems": 2},
+          "typical_multiplicity": {"type": "string"},
+          "typical_J": {"type": "string"},
+          "substituent_effects": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "substituent": {"type": "string", "description": "e.g. -OMe, -NO2, -Cl, -Ph"},
+                "position_of_substituent": {"type": "string", "description": "Where the substituent is attached"},
+                "delta_shift": {"type": "number", "description": "Change in ppm (+ = downfield)"},
+                "new_range": {"type": "array", "items": {"type": "number"}},
+                "note": {"type": "string"}
+              }
+            }
+          },
+          "solvent_effects": {
+            "type": "object",
+            "description": "Shift variation by solvent",
+            "properties": {
+              "CDCl3": {"type": "number"},
+              "DMSO-d6": {"type": "number"},
+              "CD3OD": {"type": "number"},
+              "D2O": {"type": "number"}
+            }
+          }
+        }
+      }
+    },
+    "c13_shifts": {
+      "type": "object",
+      "description": "13C NMR shift data keyed by position label",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "base_shift": {"type": "number"},
+          "range": {"type": "array", "items": {"type": "number"}, "minItems": 2, "maxItems": 2},
+          "carbon_type": {"type": "string", "enum": ["CH", "CH2", "CH3", "quaternary"]},
+          "dept_phase": {"type": "string", "enum": ["up", "down", "absent"]},
+          "substituent_effects": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "substituent": {"type": "string"},
+                "position_of_substituent": {"type": "string"},
+                "delta_shift": {"type": "number"},
+                "new_range": {"type": "array", "items": {"type": "number"}},
+                "note": {"type": "string"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "ir_bands": {
+      "type": "object",
+      "description": "Expected IR absorptions",
+      "properties": {
+        "present": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "band_range": {"type": "array", "items": {"type": "number"}},
+              "intensity": {"type": "string"},
+              "assignment": {"type": "string"}
+            }
+          }
+        },
+        "absent": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "band_range": {"type": "array", "items": {"type": "number"}},
+              "assignment": {"type": "string"},
+              "significance": {"type": "string"}
+            }
+          }
+        }
+      }
+    },
+    "diagnostic_features": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Human-readable diagnostic notes"
+    }
+  }
+}

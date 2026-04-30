@@ -1,0 +1,166 @@
+"""
+Color constants for SpectraAI UI.
+
+New deep-navy dark theme with Tailwind-inspired accent palette.
+"""
+
+import platform as _platform
+
+
+# ── Typography ────────────────────────────────────────────────────────────────
+
+# CSS-compatible font stack (for stylesheets)
+FONT_FAMILY_CSS  = "Inter, Segoe UI, Arial, sans-serif"
+
+# Single family for QFont() constructors — platform-aware
+FONT_FAMILY = (
+    "Segoe UI"      if _platform.system() == "Windows"
+    else "SF Pro Display" if _platform.system() == "Darwin"
+    else "Ubuntu"
+)
+
+FONT_MONO        = "JetBrains Mono, Consolas, Courier New, monospace"
+FONT_SIZE_BASE   = 13
+FONT_SIZE_SMALL  = 12
+FONT_SIZE_LABEL  = 11   # uppercase panel labels
+FONT_SIZE_HEADER = 15
+FONT_SIZE_TITLE  = 17
+
+# ── Animation timing (milliseconds) ──────────────────────────────────────────
+ANIM_FAST   = 150   # hover states
+ANIM_MEDIUM = 200   # panel collapse/expand
+ANIM_SLOW   = 600   # score counter, gauge fill
+ANIM_BADGE  = 800   # validation badge ring draw
+
+
+class Colors:
+    """Central color palette for the application."""
+
+    # ── Backgrounds ───────────────────────────────────────────────────────────
+    BG_DEEPEST   = "#0A0E1A"   # root window background
+    BG_DARK      = "#0F1623"   # panel backgrounds
+    BG_ELEVATED  = "#161D2E"   # cards, inputs, tables
+    BG_HOVER     = "#1E2A3F"   # interactive hover state
+    BG_SELECTED  = "#1E3A5F"   # selected rows, active states
+
+    # ── Borders ───────────────────────────────────────────────────────────────
+    BORDER        = "#1E2D45"   # subtle panel borders
+    BORDER_ACTIVE = "#2A4A72"   # focused inputs, active panels
+
+    # ── Accent colours ────────────────────────────────────────────────────────
+    ACCENT_BLUE   = "#3B82F6"   # primary actions, buttons
+    ACCENT_CYAN   = "#06B6D4"   # NMR / spectrum related
+    ACCENT_GREEN  = "#10B981"   # pass, valid, good scores
+    ACCENT_AMBER  = "#F59E0B"   # warnings, borderline
+    ACCENT_RED    = "#EF4444"   # fail, errors
+    ACCENT_PURPLE = "#8B5CF6"   # AI-generated content
+    ACCENT_PINK   = "#EC4899"   # 3D viewer, correlation
+    ACCENT_TEAL   = "#14B8A6"   # cross-spectral analysis
+
+    # ── Text ──────────────────────────────────────────────────────────────────
+    TEXT_PRIMARY   = "#F1F5F9"  # main readable text
+    TEXT_SECONDARY = "#94A3B8"  # labels, captions
+    TEXT_MUTED     = "#475569"  # placeholders
+    TEXT_INVERSE   = "#0A0E1A"  # text on light backgrounds
+
+    # ── Panel accent borders (left-border system) ─────────────────────────────
+    # Each panel type gets a 3px left border in its accent colour
+    PANEL_SPECTRUM   = ACCENT_CYAN
+    PANEL_AI         = ACCENT_PURPLE
+    PANEL_VALIDATION = ACCENT_GREEN
+    PANEL_3D         = ACCENT_PINK
+    PANEL_ADMET      = ACCENT_TEAL
+    PANEL_INPUT      = ACCENT_BLUE
+    PANEL_BATCH      = ACCENT_AMBER
+
+    # ── Semantic aliases ──────────────────────────────────────────────────────
+    SUCCESS = ACCENT_GREEN
+    WARNING = ACCENT_AMBER
+    ERROR   = ACCENT_RED
+    INFO    = ACCENT_BLUE
+
+    # ── v1 backward-compat aliases ────────────────────────────────────────────
+    BG_DARKEST          = BG_DEEPEST
+    BG_PRIMARY          = BG_DEEPEST
+    BG_SECONDARY        = BG_DARK
+    BG_CARD             = BG_ELEVATED
+    BG_INPUT            = BG_ELEVATED
+    BORDER_LIGHT        = BORDER_ACTIVE
+    BORDER_FOCUS        = BORDER_ACTIVE
+    TEXT_TERTIARY       = TEXT_MUTED
+    TEXT_DISABLED       = TEXT_MUTED
+    ACCENT_PURPLE_LIGHT = "#A78BFA"   # lighter purple for gradients
+
+    # ── Spectrum colours for plots ────────────────────────────────────────────
+    PLOT_H1   = ACCENT_CYAN
+    PLOT_C13  = ACCENT_PURPLE
+    PLOT_IR   = ACCENT_AMBER
+    PLOT_UV   = ACCENT_BLUE
+    PLOT_GRID = BG_ELEVATED
+    PLOT_AXIS = TEXT_SECONDARY
+
+    # ── Spectrum region overlays (semi-transparent) ───────────────────────────
+    REGION_AROMATIC     = "rgba(59, 130, 246, 0.08)"
+    REGION_ALIPHATIC    = "rgba(34, 197, 94, 0.08)"
+    REGION_CARBONYL     = "rgba(245, 158, 11, 0.08)"
+    REGION_EXCHANGEABLE = "rgba(239, 68, 68, 0.08)"
+
+    # ── Gauge / chart colours ─────────────────────────────────────────────────
+    GAUGE_LOW  = ACCENT_RED
+    GAUGE_MID  = ACCENT_AMBER
+    GAUGE_HIGH = ACCENT_GREEN
+    GAUGE_BG   = BG_ELEVATED
+    GAUGE_GLOW = "rgba(6, 182, 212, 0.3)"
+
+    RADAR_FILL   = "rgba(6, 182, 212, 0.2)"
+    RADAR_STROKE = ACCENT_CYAN
+    RADAR_GRID   = BORDER
+
+    # ── Badge colours ─────────────────────────────────────────────────────────
+    BADGE_CONSISTENT = ACCENT_GREEN
+    BADGE_WARNING    = ACCENT_AMBER
+    BADGE_CONFLICT   = ACCENT_RED
+    BADGE_AI         = ACCENT_PURPLE
+
+    # ── Gradient presets (Qt stylesheet linear-gradient strings) ────────────
+    GRAD_BLUE_PURPLE = "qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #3B82F6, stop:1 #8B5CF6)"
+    GRAD_TEAL_CYAN   = "qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #14B8A6, stop:1 #06B6D4)"
+    GRAD_PURPLE_PINK = "qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #8B5CF6, stop:1 #EC4899)"
+    GRAD_GREEN_TEAL  = "qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #10B981, stop:1 #14B8A6)"
+    GRAD_AMBER_RED   = "qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #F59E0B, stop:1 #EF4444)"
+    GRAD_DARK_CARD   = "qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #1A2235, stop:1 #161D2E)"
+    GRAD_TOOLBAR     = "qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #1A2235, stop:0.5 #161D2E, stop:1 #0F1623)"
+
+    # ── Glow / shadow colour tokens ──────────────────────────────────────
+    GLOW_BLUE   = "rgba(59, 130, 246, 0.35)"
+    GLOW_TEAL   = "rgba(20, 184, 166, 0.35)"
+    GLOW_PURPLE = "rgba(139, 92, 246, 0.35)"
+    GLOW_GREEN  = "rgba(16, 185, 129, 0.35)"
+    GLOW_RED    = "rgba(239, 68, 68, 0.35)"
+    GLOW_AMBER  = "rgba(245, 158, 11, 0.35)"
+
+    # ── Class methods ─────────────────────────────────────────────────────────
+
+    @classmethod
+    def status_color(cls, status: str) -> str:
+        """Return colour for a validation status string."""
+        mapping = {
+            "pass":       cls.SUCCESS,
+            "consistent": cls.SUCCESS,
+            "warning":    cls.WARNING,
+            "fail":       cls.ERROR,
+            "conflict":   cls.ERROR,
+            "skipped":    cls.TEXT_MUTED,
+            "pending":    cls.TEXT_SECONDARY,
+        }
+        return mapping.get(status.lower(), cls.TEXT_SECONDARY)
+
+    @classmethod
+    def confidence_color(cls, score: float) -> str:
+        """Return colour for a confidence score (0–100)."""
+        if score >= 70:
+            return cls.GAUGE_HIGH
+        elif score >= 40:
+            return cls.GAUGE_MID
+        else:
+            return cls.GAUGE_LOW

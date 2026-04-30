@@ -1,0 +1,2104 @@
+"""
+SpectraAI Main Window.
+
+Orchestrates the 3-zone layout:
+  - Left:   Input Panel (compound data entry)
+  - Center: Spectrum Panel (top) + Interpretation Panel (bottom)
+  - Right:  Validation Panel
+
+Handles the full analysis pipeline:
+  Parse → AI Interpret → Validate → Display → Generate Text
+"""
+
+from __future__ import annotations
+
+import json
+import os
+import traceback
+from typing import Optional
+
+from PyQt5.QtWidgets import (
+    QMainWindow, QWidget, QHBoxLayout, QVBoxLayout, QSplitter,
+    QStatusBar, QMenuBar, QMenu, QAction, QToolBar, QLabel,
+    QDialog, QDialogButtonBox, QFormLayout, QLineEdit, QComboBox,
+    QFileDialog, QMessageBox, QApplication, QProgressBar, QPushButton,
+    QTabWidget, QTabBar,
+)
+from PyQt5.QtCore import Qt, QThread, pyqtSignal, QTimer, QSize, QSettings
+from PyQt5.QtGui import QFont, QIcon, QKeySequence
+
+from .. import __version__, __app_title__
+from ..core.molecule import Molecule, MoleculeMetadata
+from ..core.nmr_data import NMRData
+from ..core.ir_data import IRData
+from ..core.ms_data import MSData
+from ..core.validation_report import ValidationReport
+from ..parsers.nmr_text_parser import parse_h1_nmr_text, parse_c13_nmr_text
+from ..parsers.ir_parser import parse_ir_text
+from ..parsers.ms_parser import parse_ms_text
+from ..ai.llm_client import LLMClient, AIProvider
+from ..ai.nmr_interpreter import NMRInterpreter
+from ..ai.ir_interpreter import IRInterpreter
+from ..ai.ms_validator import MSValidator
+from ..ai.cross_spectral_analyzer import CrossSpectralAnalyzer
+from ..ai.characterization_writer import CharacterizationWriter
+from ..validation.validation_engine import ValidationEngine
+from .input_panel import InputPanel
+from .spectrum_panel import SpectrumPanel
+from .interpretation_panel import InterpretationPanel
+from .validation_panel import ValidationPanel
+from .styles.colors import Colors
+from .widgets.collapsible_panel import CollapsiblePanel
+from .widgets.score_badge import ScoreBadge
+from .viewer.molecular_viewer import MolecularViewer
+from .viewer.correlation_card import CorrelationCard
+from .viewer.conformer_energy_chart import ConformerEnergyChart
+from ..chem.atom_mapper import AtomMapper, AtomPeakMapping
+from ..chem.conformer_generator import ConformerGenerator
+from ..chem.nmr_correlations import NMRCorrelationPredictor, Correlation, CorrelationMap
+from .nmr_maps_panel import NMRMapsPanel
+from .mode_navigator import ModeNavigator
+from .batch_panel import BatchPanel
+from .comparison_panel import ComparisonPanel
+from .retrosynthesis_panel import RetrosynthesisPanel
+from ..session.compound_session import CompoundSession, CompoundRecord
+from ..ai.retrosynthesis_planner import RetrosynthesisPlanner
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  Background Worker Thread for AI calls
+# ══════════════════════════════════════════════════════════════════════════════
+
+class AnalysisWorker(QThread):
+    """
+    Background thread for running the full analysis pipeline.
+
+    Signals:
+        status_update:    (str)  Status message for the progress bar
+        h1_result:        (dict) Parsed ¹H NMR AI interpretation
+        c13_result:       (dict) Parsed ¹³C NMR AI interpretation
+        ir_result:        (dict) Parsed IR AI interpretation
+        ms_result:        (dict) Parsed MS AI validation
+        cross_result:     (str)  Cross-spectral analysis text
+        char_result:      (str)  Characterization text
+        validation_done:  (ValidationReport)
+        stream_chunk:     (str)  Streaming text chunk from AI
+        error:            (str)  Error message
+        finished_all:     ()     All analysis complete
+    """
+
+    status_update = pyqtSignal(str)
+    h1_result = pyqtSignal(dict)
+    c13_result = pyqtSignal(dict)
+    ir_result = pyqtSignal(dict)
+    ms_result = pyqtSignal(dict)
+    cross_result = pyqtSignal(str)
+    char_result = pyqtSignal(str)
+    validation_done = pyqtSignal(object)
+    impurity_result = pyqtSignal(dict)
+    structure_predicted = pyqtSignal(str, object)
+    stream_chunk = pyqtSignal(str)
+    error = pyqtSignal(str)
+    finished_all = pyqtSignal()
+
+    def __init__(
+        self,
+        molecule: Molecule,
+        h1_data: Optional[NMRData],
+        c13_data: Optional[NMRData],
+        ir_data: Optional[IRData],
+        ms_data: Optional[MSData],
+        llm_client: LLMClient,
+        parent=None,
+    ):
+        super().__init__(parent)
+        self.molecule = molecule
+        self.h1_data = h1_data
+        self.c13_data = c13_data
+        self.ir_data = ir_data
+        self.ms_data = ms_data
+        self.llm = llm_client
+        self._cancelled = False
+
+    def cancel(self):
+        self._cancelled = True
+
+    def run(self):
+        try:
+            from ..ai.llm_client import LLMClient
+            # Create a thread-local LLM client to prevent COM cross-thread issues (0x8001010d)
+            local_llm = LLMClient(provider=self.llm.provider.value, api_key=self.llm._api_key, model=self.llm.model)
+            self.llm = local_llm
+
+            # ── Step 0: Structure Prediction (if SMILES missing) ──────────────
+            if not self.molecule.smiles and not self._cancelled:
+                self.status_update.emit("Predicting missing structure...")
+                try:
+                    from ..ai.structure_predictor import StructurePredictor
+                    predictor = StructurePredictor(self.llm)
+                    pred_result = predictor.predict(self.molecule, self.h1_data, self.c13_data)
+                    
+                    if pred_result and pred_result.candidates:
+                        # Pick top candidate
+                        top = pred_result.candidates[0]
+                        if top.smiles:
+                            self.molecule.smiles = top.smiles
+                            if not self.molecule.name and top.name:
+                                self.molecule.name = top.name
+                            if not self.molecule.formula and top.formula:
+                                self.molecule.formula = top.formula
+                                
+                            # Emit signal to load in 3D viewer
+                            self.structure_predicted.emit(top.smiles, pred_result)
+                except Exception as e:
+                    pass  # Non-critical step, continue with analysis
+
+            # ── Step 1: ¹H NMR Interpretation ─────────────────────────────────
+            if self.h1_data and self.h1_data.peaks and not self._cancelled:
+                self.status_update.emit("Interpreting ¹H NMR...")
+                interpreter = NMRInterpreter(self.llm)
+                result = interpreter.interpret_h1(
+                    self.h1_data, self.molecule,
+                )
+                if result and not self._cancelled:
+                    self.h1_result.emit(result)
+
+            # ── Step 2: ¹³C NMR Interpretation ────────────────────────────────
+            if self.c13_data and self.c13_data.peaks and not self._cancelled:
+                self.status_update.emit("Interpreting ¹³C NMR...")
+                interpreter = NMRInterpreter(self.llm)
+                result = interpreter.interpret_c13(
+                    self.c13_data, self.molecule,
+                )
+                if result and not self._cancelled:
+                    self.c13_result.emit(result)
+
+            # ── Step 3: IR Interpretation ─────────────────────────────────────
+            if self.ir_data and self.ir_data.absorptions and not self._cancelled:
+                self.status_update.emit("Interpreting IR spectrum...")
+                ir_interp = IRInterpreter(self.llm)
+                result = ir_interp.interpret(
+                    self.ir_data, self.molecule,
+                )
+                if result and not self._cancelled:
+                    self.ir_result.emit(result)
+
+            # ── Step 4: HRMS Validation ───────────────────────────────────────
+            if self.ms_data and self.ms_data.calculated_mz > 0 and not self._cancelled:
+                self.status_update.emit("Validating HRMS...")
+                ms_val = MSValidator(self.llm)
+                result = ms_val.validate(
+                    self.ms_data, self.molecule,
+                )
+                if result and not self._cancelled:
+                    self.ms_result.emit(result)
+
+            # ── Step 5: Cross-spectral Analysis ───────────────────────────────
+            if not self._cancelled:
+                self.status_update.emit("Running cross-spectral analysis...")
+                cross = CrossSpectralAnalyzer(self.llm)
+                result = cross.analyze(
+                    self.molecule, self.h1_data, self.c13_data,
+                    self.ir_data, self.ms_data,
+                )
+                if result and not self._cancelled:
+                    # Convert dict to display string for the text panel
+                    if isinstance(result, dict):
+                        parts = []
+                        if result.get("overall_assessment"):
+                            parts.append(f"Assessment: {result['overall_assessment']}")
+                        if result.get("confidence_score") is not None:
+                            parts.append(f"Confidence Score: {result['confidence_score']}/100")
+                        if result.get("summary"):
+                            parts.append(f"\n{result['summary']}")
+                        if result.get("contradictions"):
+                            parts.append("\nContradictions:")
+                            for c in result["contradictions"]:
+                                parts.append(f"  • {c}")
+                        if result.get("cross_checks"):
+                            parts.append("\nCross-checks:")
+                            for check in result["cross_checks"]:
+                                status = check.get("result", "")
+                                detail = check.get("detail", check.get("check", ""))
+                                parts.append(f"  [{status.upper()}] {detail}")
+                        if result.get("recommendations"):
+                            parts.append("\nRecommendations:")
+                            for r in result["recommendations"]:
+                                parts.append(f"  • {r}")
+                        result_text = "\n".join(parts)
+                    else:
+                        result_text = str(result)
+                    self.cross_result.emit(result_text)
+
+            # ── Step 6: Rule-based Validation ─────────────────────────────────
+            if not self._cancelled:
+                self.status_update.emit("Running validation checks...")
+                engine = ValidationEngine()
+                report = engine.validate(
+                    self.molecule, self.h1_data, self.c13_data,
+                    self.ir_data, self.ms_data,
+                )
+                if not self._cancelled:
+                    self.validation_done.emit(report)
+
+            # ── Step 7: Characterization Text ─────────────────────────────────
+            if not self._cancelled:
+                self.status_update.emit("Generating characterization text...")
+                writer = CharacterizationWriter(self.llm)
+                char_text = writer.generate(
+                    self.molecule, self.h1_data, self.c13_data,
+                    self.ir_data, self.ms_data,
+                )
+                if char_text and not self._cancelled:
+                    self.char_result.emit(char_text)
+
+            # ── Step 8: Impurity Detection ───────────────────────────────────
+            if self.h1_data and self.h1_data.peaks and not self._cancelled:
+                self.status_update.emit("Checking for impurities...")
+                try:
+                    from ..ai.impurity_detector import ImpurityDetector
+                    detector = ImpurityDetector(self.llm)
+                    imp_result = detector.detect(
+                        self.h1_data,
+                        smiles=self.molecule.smiles or "",
+                        formula=self.molecule.formula or "",
+                        name=self.molecule.name or "",
+                    )
+                    if imp_result and not self._cancelled:
+                        self.impurity_result.emit(imp_result)
+                except Exception:
+                    pass  # Non-critical step
+
+            if not self._cancelled:
+                self.status_update.emit("Analysis complete")
+                self.finished_all.emit()
+
+        except Exception as e:
+            self.error.emit(f"Analysis error: {str(e)}\n{traceback.format_exc()}")
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  Background Worker Thread for 2D NMR prediction
+# ══════════════════════════════════════════════════════════════════════════════
+
+class NMRPredictionThread(QThread):
+    """Predict COSY/HSQC/HMBC correlations off the main thread."""
+
+    maps_ready = pyqtSignal(dict)  # dict[str, CorrelationMap]
+
+    def __init__(self, smiles: str, h1_mappings: list, c13_mappings: list,
+                 h1_data, c13_data, parent=None):
+        super().__init__(parent)
+        self._smiles = smiles
+        self._h1_map = h1_mappings
+        self._c13_map = c13_mappings
+        self._h1 = h1_data
+        self._c13 = c13_data
+
+    def run(self):
+        try:
+            pred = NMRCorrelationPredictor(
+                self._smiles, self._h1_map, self._c13_map,
+                self._h1, self._c13,
+            )
+            maps = pred.predict_all()
+            self.maps_ready.emit(maps)
+        except Exception:
+            self.maps_ready.emit({})
+
+
+class TautomerThread(QThread):
+    """Enumerate tautomers off the main thread."""
+
+    tautomers_ready = pyqtSignal(list)  # list[dict]
+
+    def __init__(self, smiles: str, parent=None):
+        super().__init__(parent)
+        self._smiles = smiles
+
+    def run(self):
+        try:
+            from ..chem.tautomer_enumerator import TautomerEnumerator
+            enumerator = TautomerEnumerator()
+            results = enumerator.enumerate(self._smiles)
+            self.tautomers_ready.emit(results)
+        except Exception:
+            self.tautomers_ready.emit([])
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  Background Worker for AI Predictive Features (SAR / ADMET / Retrosynthesis)
+# ══════════════════════════════════════════════════════════════════════════════
+
+class _PredictiveWorker(QThread):
+    """Generic worker thread for AI-powered predictive analysis tasks."""
+
+    result_ready = pyqtSignal(dict)
+    error_occurred = pyqtSignal(str)
+
+    def __init__(
+        self,
+        task: str,
+        llm: LLMClient,
+        smiles: str,
+        name: str = "",
+        formula: str = "",
+        scaffold_family: str = "",
+        extra: dict = None,
+        parent=None,
+    ):
+        super().__init__(parent)
+        self._task = task
+        self._llm = llm
+        self._smiles = smiles
+        self._name = name
+        self._formula = formula
+        self._scaffold = scaffold_family
+        self._extra = extra or {}
+
+    def run(self):
+        try:
+            from ..ai.llm_client import LLMClient
+            # Create a thread-local LLM client to prevent COM cross-thread issues (0x8001010d)
+            local_llm = LLMClient(provider=self._llm.provider.value, api_key=self._llm._api_key, model=self._llm.model)
+            self._llm = local_llm
+
+            if self._task == "retrosynthesis":
+                from ..ai.retrosynthesis_planner import RetrosynthesisPlanner
+                planner = RetrosynthesisPlanner(self._llm)
+                result = planner.plan(
+                    smiles=self._smiles,
+                    name=self._name,
+                    formula=self._formula,
+                    scaffold_family=self._scaffold,
+                    constraints=self._extra.get("constraints", ""),
+                    max_steps=self._extra.get("max_steps", 8),
+                    num_routes=self._extra.get("num_routes", 3),
+                )
+            else:
+                result = None
+
+            if result:
+                self.result_ready.emit(result)
+            else:
+                self.error_occurred.emit("AI returned no structured response. Check your API key and try again.")
+        except Exception as e:
+            self.error_occurred.emit(str(e))
+
+
+class ImageParseWorker(QThread):
+    result_ready = pyqtSignal(dict)
+    error_occurred = pyqtSignal(str)
+
+    def __init__(self, file_paths: list, llm: LLMClient, parent=None):
+        super().__init__(parent)
+        self.file_paths = file_paths
+        self.llm = llm
+
+    def run(self):
+        try:
+            from ..ai.image_spectra_parser import ImageSpectraParser
+            from ..ai.llm_client import LLMClient
+            
+            # Create a fresh client in this thread to avoid COM/gRPC cross-thread crash (0x8001010d)
+            local_llm = LLMClient(provider=self.llm.provider.value, api_key=self.llm._api_key, model=self.llm.model)
+            
+            parser = ImageSpectraParser(local_llm)
+            result = parser.parse_files(self.file_paths)
+            if result:
+                self.result_ready.emit(result)
+            else:
+                self.error_occurred.emit("No data was extracted from the image(s).")
+        except Exception as e:
+            self.error_occurred.emit(str(e))
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  Settings Dialog
+# ══════════════════════════════════════════════════════════════════════════════
+
+class SettingsDialog(QDialog):
+    """Dialog for configuring API keys and provider settings."""
+
+    def __init__(self, current_provider: str, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("SpectraAI Settings")
+        self.setFixedSize(480, 280)
+        self.setStyleSheet(f"""
+            QDialog {{ background-color: {Colors.BG_PRIMARY}; }}
+            QLabel {{ color: {Colors.TEXT_PRIMARY}; font-size: 14px; }}
+            QLineEdit {{
+                background-color: {Colors.BG_SECONDARY};
+                color: {Colors.TEXT_PRIMARY};
+                border: 1px solid {Colors.BORDER};
+                border-radius: 6px;
+                padding: 8px;
+                font-size: 14px;
+            }}
+            QComboBox {{
+                background-color: {Colors.BG_SECONDARY};
+                color: {Colors.TEXT_PRIMARY};
+                border: 1px solid {Colors.BORDER};
+                border-radius: 6px;
+                padding: 6px 10px;
+                font-size: 14px;
+            }}
+        """)
+
+        layout = QVBoxLayout(self)
+        form = QFormLayout()
+
+        self.provider_combo = QComboBox()
+        self.provider_combo.addItems(["claude", "gemini"])
+        self.provider_combo.setCurrentText(current_provider)
+        form.addRow("AI Provider:", self.provider_combo)
+
+        self.claude_key_edit = QLineEdit()
+        self.claude_key_edit.setPlaceholderText("sk-ant-...")
+        self.claude_key_edit.setEchoMode(QLineEdit.Password)
+        self.claude_key_edit.setText(os.environ.get("ANTHROPIC_API_KEY", ""))
+        form.addRow("Claude API Key:", self.claude_key_edit)
+
+        self.gemini_key_edit = QLineEdit()
+        self.gemini_key_edit.setPlaceholderText("AI...")
+        self.gemini_key_edit.setEchoMode(QLineEdit.Password)
+        self.gemini_key_edit.setText(os.environ.get("GOOGLE_API_KEY", ""))
+        form.addRow("Gemini API Key:", self.gemini_key_edit)
+
+        layout.addLayout(form)
+        layout.addStretch()
+
+        buttons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        buttons.accepted.connect(self.accept)
+        buttons.rejected.connect(self.reject)
+        buttons.setStyleSheet(f"""
+            QPushButton {{
+                background-color: {Colors.ACCENT_BLUE};
+                color: white;
+                border: none;
+                border-radius: 6px;
+                padding: 8px 20px;
+                font-size: 14px;
+            }}
+            QPushButton:hover {{ background-color: #2f81f7; }}
+        """)
+        layout.addWidget(buttons)
+
+    def get_settings(self) -> dict:
+        return {
+            "provider": self.provider_combo.currentText(),
+            "claude_key": self.claude_key_edit.text().strip(),
+            "gemini_key": self.gemini_key_edit.text().strip(),
+        }
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  Main Window
+# ══════════════════════════════════════════════════════════════════════════════
+
+class MainWindow(QMainWindow):
+    """
+    SpectraAI Main Application Window.
+
+    Three-zone layout:
+      Left   — Input Panel (compound data entry + completeness ring)
+      Center — Spectrum Panel (NMR/IR plots) + Interpretation Panel (AI text)
+      Right  — Validation Panel (checks table + gauge + radar)
+    """
+
+    def __init__(self, api_provider: str = "claude", debug: bool = False):
+        super().__init__()
+        self._debug = debug
+        self._api_provider = api_provider
+        self._worker: Optional[AnalysisWorker] = None
+        self._llm: Optional[LLMClient] = None
+
+        # Current analysis state
+        self._molecule: Optional[Molecule] = None
+        self._h1_data: Optional[NMRData] = None
+        self._c13_data: Optional[NMRData] = None
+        self._ir_data: Optional[IRData] = None
+        self._ms_data: Optional[MSData] = None
+
+        # Atom↔Peak correlation state
+        self._h1_ai_result: Optional[dict] = None
+        self._c13_ai_result: Optional[dict] = None
+        self._atom_mapper: Optional[AtomMapper] = None
+        self._h1_mappings: list[AtomPeakMapping] = []
+        self._c13_mappings: list[AtomPeakMapping] = []
+
+        # 2D NMR correlation maps state
+        self._correlation_maps: Optional[dict] = None
+        self._nmr_pred_thread: Optional[NMRPredictionThread] = None
+
+        # Session management
+        self._session: CompoundSession = CompoundSession.instance()
+        self._analysis_queue: list[str] = []
+        self._queue_running: bool = False
+
+        self._init_window()
+        self._build_menu_bar()
+        self._build_toolbar()
+        self._build_central_layout()
+        self._build_status_bar()
+        self._connect_signals()
+        self._init_llm_client()
+
+    # ── Window setup ──────────────────────────────────────────────────────────
+
+    def _init_window(self):
+        self.setWindowTitle(__app_title__)
+        self.setMinimumSize(1280, 800)
+        self.resize(1600, 960)
+
+    # ── Menu bar ──────────────────────────────────────────────────────────────
+
+    def _build_menu_bar(self):
+        menubar = self.menuBar()
+        menubar.setStyleSheet(f"""
+            QMenuBar {{
+                background-color: {Colors.BG_ELEVATED};
+                color: {Colors.TEXT_PRIMARY};
+                border-bottom: 1px solid {Colors.BORDER};
+                padding: 2px 6px;
+                font-size: 14px;
+            }}
+            QMenuBar::item:selected {{ background-color: {Colors.ACCENT_BLUE}40; }}
+            QMenu {{
+                background-color: {Colors.BG_ELEVATED};
+                color: {Colors.TEXT_PRIMARY};
+                border: 1px solid {Colors.BORDER};
+                padding: 4px;
+                font-size: 14px;
+            }}
+            QMenu::item:selected {{ background-color: {Colors.ACCENT_BLUE}40; }}
+        """)
+
+        # File menu
+        file_menu = menubar.addMenu("&File")
+
+        open_action = QAction("&Open Compound JSON...", self)
+        open_action.setShortcut(QKeySequence("Ctrl+O"))
+        open_action.triggered.connect(self._open_compound_file)
+        file_menu.addAction(open_action)
+
+        import_image_action = QAction("Import Spectra from Image/PDF...", self)
+        import_image_action.triggered.connect(self._import_from_image_pdf)
+        file_menu.addAction(import_image_action)
+
+        save_action = QAction("&Save Compound JSON...", self)
+        save_action.setShortcut(QKeySequence("Ctrl+S"))
+        save_action.triggered.connect(self._save_compound_file)
+        file_menu.addAction(save_action)
+
+        file_menu.addSeparator()
+
+        import_csv_action = QAction("Import CSV Batch...", self)
+        import_csv_action.triggered.connect(self._import_csv)
+        file_menu.addAction(import_csv_action)
+
+        file_menu.addSeparator()
+
+        export_pdf_action = QAction("&Export PDF Report...", self)
+        export_pdf_action.setShortcut(QKeySequence("Ctrl+E"))
+        export_pdf_action.triggered.connect(self._export_pdf)
+        file_menu.addAction(export_pdf_action)
+
+        file_menu.addSeparator()
+
+        quit_action = QAction("&Quit", self)
+        quit_action.setShortcut(QKeySequence("Ctrl+Q"))
+        quit_action.triggered.connect(self.close)
+        file_menu.addAction(quit_action)
+
+        # Edit menu
+        edit_menu = menubar.addMenu("&Edit")
+
+        clear_action = QAction("Clear All", self)
+        clear_action.setShortcut(QKeySequence("Ctrl+Shift+C"))
+        clear_action.triggered.connect(self._clear_all)
+        edit_menu.addAction(clear_action)
+
+        settings_action = QAction("&Settings...", self)
+        settings_action.setShortcut(QKeySequence("Ctrl+,"))
+        settings_action.triggered.connect(self._open_settings)
+        edit_menu.addAction(settings_action)
+
+        # Analysis menu
+        analysis_menu = menubar.addMenu("&Analysis")
+
+        analyze_action = QAction("Run Full &Analysis", self)
+        analyze_action.setShortcut(QKeySequence("Ctrl+Return"))
+        analyze_action.triggered.connect(self._run_analysis)
+        analysis_menu.addAction(analyze_action)
+
+        cancel_action = QAction("Cancel Analysis", self)
+        cancel_action.setShortcut(QKeySequence("Escape"))
+        cancel_action.triggered.connect(self._cancel_analysis)
+        analysis_menu.addAction(cancel_action)
+
+        analysis_menu.addSeparator()
+
+        predict_action = QAction("Predict &Structure...", self)
+        predict_action.triggered.connect(self._predict_structure)
+        analysis_menu.addAction(predict_action)
+
+        # Help menu
+        help_menu = menubar.addMenu("&Help")
+
+        about_action = QAction("&About SpectraAI", self)
+        about_action.triggered.connect(self._show_about)
+        help_menu.addAction(about_action)
+
+    # ── Toolbar ───────────────────────────────────────────────────────────────
+
+    def _build_toolbar(self):
+        from PyQt5.QtWidgets import QSizePolicy
+        toolbar = QToolBar("Main Toolbar")
+        toolbar.setMovable(False)
+        toolbar.setIconSize(QSize(20, 20))
+        toolbar.setStyleSheet(f"""
+            QToolBar {{
+                background-color: {Colors.GRAD_TOOLBAR};
+                border-bottom: 1px solid {Colors.BORDER};
+                padding: 5px 10px;
+                spacing: 6px;
+            }}
+            QToolButton {{
+                background-color: transparent;
+                color: {Colors.TEXT_PRIMARY};
+                border: 1px solid transparent;
+                border-radius: 8px;
+                padding: 7px 16px;
+                font-size: 13px;
+                font-weight: 500;
+            }}
+            QToolButton:hover {{
+                background-color: {Colors.BG_HOVER};
+                border-color: {Colors.BORDER_ACTIVE};
+            }}
+            QToolButton:pressed {{
+                background-color: {Colors.ACCENT_BLUE}25;
+            }}
+        """)
+        self.addToolBar(toolbar)
+
+        # Analyze button (prominent)
+        self._analyze_btn = QAction("▶ Analyze", self)
+        self._analyze_btn.setToolTip("Run full multi-spectral analysis (Ctrl+Enter)")
+        self._analyze_btn.triggered.connect(self._run_analysis)
+        toolbar.addAction(self._analyze_btn)
+
+        toolbar.addSeparator()
+
+        # Provider indicator
+        self._provider_label = QLabel()
+        self._provider_label.setStyleSheet(
+            f"color: {Colors.TEXT_SECONDARY}; font-size: 12px; padding: 0 8px;"
+        )
+        toolbar.addWidget(self._provider_label)
+
+        spacer = QWidget()
+        spacer.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
+        toolbar.addWidget(spacer)
+
+        # Confidence score badge
+        conf_label = QLabel("Confidence:")
+        conf_label.setStyleSheet(
+            f"color: {Colors.TEXT_SECONDARY}; font-size: 12px; padding: 0 4px 0 0;"
+        )
+        toolbar.addWidget(conf_label)
+
+        self._score_badge = ScoreBadge()
+        self._score_badge.clicked.connect(self._focus_validation_panel)
+        toolbar.addWidget(self._score_badge)
+
+        toolbar.addSeparator()
+
+        # Settings
+        settings_btn = QAction("⚙ Settings", self)
+        settings_btn.triggered.connect(self._open_settings)
+        toolbar.addAction(settings_btn)
+
+    # ── Central layout ────────────────────────────────────────────────────────
+
+    def _build_central_layout(self):
+        """Build the 2-panel tabbed layout with mode navigator."""
+        central = QWidget()
+        self.setCentralWidget(central)
+        outer_layout = QVBoxLayout(central)
+        outer_layout.setContentsMargins(0, 0, 0, 0)
+        outer_layout.setSpacing(0)
+
+        # Mode navigator (Analysis | Session | Compare)
+        self._mode_nav = ModeNavigator()
+        self._mode_nav.mode_changed.connect(self._on_mode_changed)
+        outer_layout.addWidget(self._mode_nav)
+
+        # ── Tab styling (shared) ──────────────────────────────────────────────
+        _tab_style = f"""
+            QTabWidget::pane {{
+                border: none;
+                background: {Colors.BG_DARK};
+            }}
+            QTabBar::tab {{
+                background: {Colors.BG_ELEVATED};
+                color: {Colors.TEXT_SECONDARY};
+                padding: 9px 20px;
+                font-size: 13px;
+                font-weight: 600;
+                border: none;
+                border-bottom: 2px solid transparent;
+                min-width: 80px;
+                letter-spacing: 0.3px;
+            }}
+            QTabBar::tab:selected {{
+                color: {Colors.TEXT_PRIMARY};
+                border-bottom: 2px solid {Colors.ACCENT_CYAN};
+                background: {Colors.BG_DARK};
+            }}
+            QTabBar::tab:hover:!selected {{
+                color: {Colors.TEXT_PRIMARY};
+                background: {Colors.BG_HOVER};
+                border-bottom: 2px solid {Colors.BORDER_ACTIVE};
+            }}
+        """
+
+        # ── Main splitter: Left 50% | Right 50% ──────────────────────────────
+        self._main_splitter = QSplitter(Qt.Horizontal)
+        self._main_splitter.setHandleWidth(3)
+        self._main_splitter.setStyleSheet(
+            f"QSplitter::handle {{ background: {Colors.BORDER}; }}"
+        )
+
+        # ── LEFT PANEL (tabbed) ───────────────────────────────────────────────
+        self._left_tabs = QTabWidget()
+        self._left_tabs.setStyleSheet(_tab_style)
+        self._left_tabs.setDocumentMode(True)
+
+        # Tab 0: Input
+        self._input_panel = InputPanel()
+        self._left_tabs.addTab(self._input_panel, "Input")
+
+        # Tab 1: Spectra + AI (vertical splitter)
+        spectra_ai_page = QWidget()
+        sa_layout = QVBoxLayout(spectra_ai_page)
+        sa_layout.setContentsMargins(0, 0, 0, 0)
+        sa_layout.setSpacing(0)
+
+        self._sa_splitter = QSplitter(Qt.Vertical)
+        self._sa_splitter.setHandleWidth(4)
+        self._sa_splitter.setStyleSheet(
+            f"QSplitter::handle {{ background: {Colors.BORDER_ACTIVE}; }}"
+            f"QSplitter::handle:hover {{ background: {Colors.ACCENT_BLUE}; }}"
+        )
+
+        self._spectrum_panel = SpectrumPanel()
+        self._sa_splitter.addWidget(self._spectrum_panel)
+
+        self._interpretation_panel = InterpretationPanel()
+        self._sa_splitter.addWidget(self._interpretation_panel)
+
+        self._sa_splitter.setSizes([500, 500])
+        sa_layout.addWidget(self._sa_splitter)
+        self._left_tabs.addTab(spectra_ai_page, "Spectra + AI")
+
+        # Tab 2: 2D NMR Maps
+        self._nmr_maps_panel = NMRMapsPanel()
+        self._left_tabs.addTab(self._nmr_maps_panel, "2D NMR")
+
+        # Tab 3: Validation
+        self._validation_panel = ValidationPanel()
+        self._left_tabs.addTab(self._validation_panel, "Validation")
+
+        # Tab 4: Retrosynthesis Planning (AI-powered)
+        self._retrosynthesis_panel = RetrosynthesisPanel()
+        self._left_tabs.addTab(self._retrosynthesis_panel, "Retrosynthesis")
+
+        self._main_splitter.addWidget(self._left_tabs)
+
+        # ── RIGHT PANEL (tabbed) ──────────────────────────────────────────────
+        self._right_tabs = QTabWidget()
+        self._right_tabs.setStyleSheet(_tab_style)
+        self._right_tabs.setDocumentMode(True)
+
+        # Tab 0: 3D Viewer + Energy chart
+        self._molecular_viewer = MolecularViewer()
+        self._molecular_viewer.conformer_loading.connect(
+            lambda: self._status_msg("Generating 3D conformers...")
+        )
+        self._molecular_viewer.conformer_ready.connect(
+            lambda: self._status_msg("3D structure ready")
+        )
+        self._molecular_viewer.conformer_ready.connect(self._on_conformer_ready_post)
+
+        viewer_container = QWidget()
+        viewer_vbox = QVBoxLayout(viewer_container)
+        viewer_vbox.setContentsMargins(0, 0, 0, 0)
+        viewer_vbox.setSpacing(0)
+        viewer_vbox.addWidget(self._molecular_viewer)
+
+        self._energy_chart = ConformerEnergyChart()
+        self._energy_chart.conformer_selected.connect(self._on_energy_bar_clicked)
+        self._energy_chart.hide()
+        viewer_vbox.addWidget(self._energy_chart)
+
+        self._right_tabs.addTab(viewer_container, "3D Viewer")
+
+        # Correlation card — floats over the viewer container
+        self._correlation_card = CorrelationCard(viewer_container)
+        self._correlation_card.move(8, 8)
+
+        # Tab 1: Session (BatchPanel) — shown in right panel during session mode
+        self._batch_panel = BatchPanel()
+        # (Added to right_tabs dynamically during mode switch)
+
+        # Tab 2: Comparison
+        self._comparison_panel = ComparisonPanel()
+        # (Added to right_tabs dynamically during mode switch)
+
+        self._main_splitter.addWidget(self._right_tabs)
+
+        # ── Splitter proportions ──────────────────────────────────────────────
+        settings = QSettings("SpectraAI", "SpectraAI")
+        saved = settings.value("splitter/main_v2/sizes")
+        if saved:
+            try:
+                self._main_splitter.setSizes([int(x) for x in saved])
+            except (ValueError, TypeError):
+                self._main_splitter.setSizes([700, 700])
+        else:
+            self._main_splitter.setSizes([700, 700])
+
+        self._main_splitter.splitterMoved.connect(self._save_splitter_state)
+
+        outer_layout.addWidget(self._main_splitter, 1)
+
+        # ── Backward-compat stubs for CollapsiblePanel references ─────────────
+        # These are called by _on_validation_done, _on_nmr_maps_ready, etc.
+        # In the new layout, "expand" means "switch to that tab".
+        class _TabSwitcher:
+            """Stub replacing CollapsiblePanel.expand() / ensure_expanded()."""
+            def __init__(self, tab_widget, widget):
+                self._tw = tab_widget
+                self._w = widget
+            def expand(self):
+                idx = self._tw.indexOf(self._w)
+                if idx >= 0:
+                    self._tw.setCurrentIndex(idx)
+            def ensure_expanded(self):
+                pass  # tabs don't need this
+
+        self._validation_cp = _TabSwitcher(self._left_tabs, self._validation_panel)
+        self._nmr_maps_cp = _TabSwitcher(self._left_tabs, self._nmr_maps_panel)
+        self._input_cp = _TabSwitcher(self._left_tabs, self._input_panel)
+        self._spectrum_cp = _TabSwitcher(self._left_tabs, spectra_ai_page)
+        self._interp_cp = _TabSwitcher(self._left_tabs, spectra_ai_page)
+        self._viewer3d_cp = _TabSwitcher(self._right_tabs, viewer_container)
+        self._batch_cp = _TabSwitcher(self._left_tabs, self._input_panel)  # no-op stub
+
+        # Session label stub (session count shown in mode nav badge instead)
+        self._session_label = QLabel("")
+
+    # ── Mode switching ─────────────────────────────────────────────────────────
+
+    def _on_mode_changed(self, mode: int):
+        """Reconfigure left/right tab widgets for the selected mode."""
+
+        if mode == ModeNavigator.MODE_ANALYSIS:
+            # LEFT: Input, Spectra+AI, 2D NMR, Validation
+            # RIGHT: 3D Viewer only
+            # Remove session/compare tabs from right if present
+            for i in range(self._right_tabs.count() - 1, 0, -1):
+                self._right_tabs.removeTab(i)
+            # Restore left tabs if they were replaced
+            self._restore_analysis_tabs()
+            self._right_tabs.setCurrentIndex(0)
+
+        elif mode == ModeNavigator.MODE_SESSION:
+            # LEFT: Session cards (BatchPanel) as a tab alongside analysis tabs
+            # RIGHT: 3D Viewer + Validation
+            self._restore_analysis_tabs()
+            # Add session tab to left if not present
+            if self._left_tabs.indexOf(self._batch_panel) == -1:
+                self._left_tabs.insertTab(0, self._batch_panel, "Session")
+            self._left_tabs.setCurrentWidget(self._batch_panel)
+            # Remove compare from right if present
+            for i in range(self._right_tabs.count() - 1, 0, -1):
+                self._right_tabs.removeTab(i)
+
+        elif mode == ModeNavigator.MODE_COMPARE:
+            # LEFT: Compound A (comparison panel fills left)
+            # RIGHT: Compound B (3D viewer replaced by comparison)
+            # Remove session tab from left if present
+            idx = self._left_tabs.indexOf(self._batch_panel)
+            if idx != -1:
+                self._left_tabs.removeTab(idx)
+            # Add comparison to right panel
+            if self._right_tabs.indexOf(self._comparison_panel) == -1:
+                self._right_tabs.addTab(self._comparison_panel, "Compare")
+            self._right_tabs.setCurrentWidget(self._comparison_panel)
+
+    def _restore_analysis_tabs(self):
+        """Ensure the standard analysis tabs are in the left panel."""
+        # Remove session tab if it was added
+        idx = self._left_tabs.indexOf(self._batch_panel)
+        if idx != -1:
+            self._left_tabs.removeTab(idx)
+        # The core analysis tabs (Input, Spectra+AI, 2D NMR, Validation)
+        # stay permanently — we never remove them, only add/remove extras.
+
+    # ── Status bar ────────────────────────────────────────────────────────────
+
+    def _build_status_bar(self):
+        self._statusbar = QStatusBar()
+        self._statusbar.setStyleSheet(f"""
+            QStatusBar {{
+                background-color: {Colors.GRAD_TOOLBAR};
+                color: {Colors.TEXT_SECONDARY};
+                border-top: 1px solid {Colors.BORDER};
+                font-size: 12px;
+                padding: 3px 10px;
+            }}
+        """)
+        self.setStatusBar(self._statusbar)
+
+        self._progress_bar = QProgressBar()
+        self._progress_bar.setMaximumWidth(200)
+        self._progress_bar.setMaximumHeight(16)
+        self._progress_bar.setVisible(False)
+        self._progress_bar.setStyleSheet(f"""
+            QProgressBar {{
+                border: 1px solid {Colors.BORDER};
+                border-radius: 5px;
+                background-color: {Colors.BG_ELEVATED};
+                text-align: center;
+                font-size: 11px;
+                color: {Colors.TEXT_PRIMARY};
+            }}
+            QProgressBar::chunk {{
+                background-color: {Colors.GRAD_BLUE_PURPLE};
+                border-radius: 4px;
+            }}
+        """)
+        self._statusbar.addPermanentWidget(self._progress_bar)
+
+        self._status_msg("Ready — Enter compound data and press Analyze")
+
+    # ── Signal connections ────────────────────────────────────────────────────
+
+    def _connect_signals(self):
+        """Wire up inter-panel signals."""
+        # Input → Analysis
+        self._input_panel.analyze_requested.connect(self._run_analysis)
+
+        # Validation → Re-validate
+        self._validation_panel.revalidate_requested.connect(self._run_analysis)
+
+        # Interpretation → Re-interpret
+        self._interpretation_panel.reinterpret_requested.connect(self._run_analysis)
+
+        # Atom↔Peak bidirectional correlation
+        self._molecular_viewer.atom_clicked.connect(self._on_atom_clicked_correlation)
+        self._spectrum_panel.peak_clicked.connect(self._on_peak_clicked_correlation)
+        self._spectrum_panel.ir_band_clicked.connect(self._on_ir_band_clicked_correlation)
+
+        # Interpretation panel peak rows → 3D viewer correlation
+        self._interpretation_panel.peak_row_clicked.connect(self._on_peak_clicked_correlation)
+
+        # Measurement results from 3D viewer
+        self._molecular_viewer.measurement_signal.connect(self._on_measurement)
+
+        # 2D NMR maps → 3D viewer correlation
+        self._nmr_maps_panel.correlation_clicked.connect(self._on_correlation_clicked)
+
+        # Session / Batch / Comparison
+        self._batch_panel.compound_selected.connect(self._on_compound_selected)
+        self._batch_panel.batch_analyse_requested.connect(self._on_batch_analyse)
+        self._batch_panel.add_current_requested.connect(self._add_current_to_session)
+        self._batch_panel.compare_requested.connect(self._on_compare_requested)
+        self._comparison_panel.exit_requested.connect(self._exit_comparison)
+
+        # Session observer callbacks
+        self._session.on_record_added.append(self._on_session_record_added)
+        self._session.on_record_removed.append(self._on_session_record_removed)
+
+        # AI-powered predictive panels
+        self._retrosynthesis_panel.plan_requested.connect(self._on_retrosynthesis_plan)
+        self._retrosynthesis_panel.view_in_3d.connect(self._load_molecule_3d)
+
+    # ── LLM Client ────────────────────────────────────────────────────────────
+
+    def _init_llm_client(self):
+        """Initialize the LLM client from current settings."""
+        try:
+            self._llm = LLMClient(provider=self._api_provider)
+            status = "✓ Connected" if self._llm.is_configured else "✗ No API Key"
+            self._provider_label.setText(
+                f"AI: {self._llm.provider_display_name}  [{status}]"
+            )
+            color = Colors.SUCCESS if self._llm.is_configured else Colors.WARNING
+            self._provider_label.setStyleSheet(
+                f"color: {color}; font-size: 12px; padding: 0 8px;"
+            )
+        except Exception as e:
+            self._provider_label.setText(f"AI: Error — {e}")
+            self._provider_label.setStyleSheet(
+                f"color: {Colors.ERROR}; font-size: 12px; padding: 0 8px;"
+            )
+
+    # ── Analysis Pipeline ─────────────────────────────────────────────────────
+
+    def _run_analysis(self):
+        """Execute the full analysis pipeline in a background thread."""
+        if self._worker and self._worker.isRunning():
+            self._status_msg("Analysis already running...")
+            return
+
+        # Check API key
+        if not self._llm or not self._llm.is_configured:
+            QMessageBox.warning(
+                self, "API Key Required",
+                "Please configure your API key in Settings (Ctrl+,) before running analysis.",
+            )
+            self._open_settings()
+            return
+
+        # ── Gather data from Input Panel ──────────────────────────────────────
+        self._molecule = self._input_panel.get_molecule()
+
+        h1_text = self._input_panel.get_h1_text()
+        c13_text = self._input_panel.get_c13_text()
+        ir_text = self._input_panel.get_ir_text()
+        ms_text = self._input_panel.get_ms_text()
+
+        # Parse spectral data
+        self._h1_data = parse_h1_nmr_text(h1_text) if h1_text.strip() else None
+        self._c13_data = parse_c13_nmr_text(c13_text) if c13_text.strip() else None
+        self._ir_data = parse_ir_text(ir_text) if ir_text.strip() else None
+        self._ms_data = parse_ms_text(ms_text) if ms_text.strip() else None
+
+        # Check we have at least something to analyze
+        has_data = any([
+            self._h1_data and self._h1_data.peaks,
+            self._c13_data and self._c13_data.peaks,
+            self._ir_data and self._ir_data.absorptions,
+            self._ms_data and self._ms_data.calculated_mz > 0,
+        ])
+
+        if not has_data:
+            QMessageBox.information(
+                self, "No Data",
+                "Please enter at least one type of spectral data (¹H NMR, ¹³C NMR, IR, or HRMS).",
+            )
+            return
+
+        # Store raw data on molecule for validation
+        if self._h1_data:
+            self._molecule._h1_nmr = self._h1_data.to_dict()
+        if self._c13_data:
+            self._molecule._c13_nmr = self._c13_data.to_dict()
+        if self._ir_data:
+            self._molecule._ir = self._ir_data.to_dict()
+        if self._ms_data:
+            self._molecule._hrms = self._ms_data.to_dict()
+
+        # ── Plot spectra immediately ──────────────────────────────────────────
+        if self._h1_data and self._h1_data.peaks:
+            self._spectrum_panel.plot_h1_nmr(self._h1_data)
+        if self._c13_data and self._c13_data.peaks:
+            self._spectrum_panel.plot_c13_nmr(self._c13_data)
+        if self._ir_data and self._ir_data.absorptions:
+            self._spectrum_panel.plot_ir(self._ir_data)
+
+        # ── Show thinking state ───────────────────────────────────────────────
+        self._interpretation_panel.show_thinking("AI analyzing your spectra")
+        self._progress_bar.setVisible(True)
+        self._progress_bar.setRange(0, 0)  # indeterminate
+        self._status_msg("Running multi-spectral analysis...")
+
+        # ── Launch background worker ──────────────────────────────────────────
+        self._worker = AnalysisWorker(
+            molecule=self._molecule,
+            h1_data=self._h1_data,
+            c13_data=self._c13_data,
+            ir_data=self._ir_data,
+            ms_data=self._ms_data,
+            llm_client=self._llm,
+        )
+        self._worker.status_update.connect(self._status_msg)
+        self._worker.h1_result.connect(self._on_h1_result)
+        self._worker.c13_result.connect(self._on_c13_result)
+        self._worker.ir_result.connect(self._on_ir_result)
+        self._worker.ms_result.connect(self._on_ms_result)
+        self._worker.cross_result.connect(self._on_cross_result)
+        self._worker.char_result.connect(self._on_char_result)
+        self._worker.validation_done.connect(self._on_validation_done)
+        self._worker.impurity_result.connect(self._on_impurity_result)
+        self._worker.structure_predicted.connect(self._on_structure_predicted)
+        self._worker.error.connect(self._on_analysis_error)
+        self._worker.finished_all.connect(self._on_analysis_complete)
+        self._worker.start()
+
+    def _cancel_analysis(self):
+        """Cancel the running analysis."""
+        if self._worker and self._worker.isRunning():
+            self._worker.cancel()
+            self._status_msg("Cancelling analysis...")
+
+    # ── Result Handlers ───────────────────────────────────────────────────────
+
+    def _on_h1_result(self, result: dict):
+        """Handle ¹H NMR AI interpretation result."""
+        self._h1_ai_result = result  # Store for correlation mapping
+        summary = result.get("summary", "")
+        peaks = result.get("peaks", [])
+        warnings = result.get("warnings", [])
+
+        # Update interpretation panel
+        text = f"**¹H NMR Interpretation:**\n\n{summary}\n"
+        if warnings:
+            text += "\n⚠ Warnings:\n" + "\n".join(f"  • {w}" for w in warnings)
+        self._interpretation_panel.hide_thinking()
+        self._interpretation_panel.set_interpretation(text, animated=True)
+
+        # Update peaks table
+        if peaks:
+            self._interpretation_panel.set_h1_peaks(peaks)
+
+    def _on_c13_result(self, result: dict):
+        """Handle ¹³C NMR AI interpretation result."""
+        self._c13_ai_result = result  # Store for correlation mapping
+        summary = result.get("summary", "")
+        peaks = result.get("peaks", [])
+
+        if peaks:
+            self._interpretation_panel.set_c13_peaks(peaks)
+
+    def _on_ir_result(self, result: dict):
+        """Handle IR interpretation result."""
+        pass  # IR results integrated into cross-spectral view
+
+    def _on_ms_result(self, result: dict):
+        """Handle MS validation result."""
+        pass  # MS results shown in validation panel
+
+    def _on_cross_result(self, text: str):
+        """Handle cross-spectral analysis result."""
+        self._interpretation_panel.set_cross_spectral(text, animated=True)
+
+    def _on_char_result(self, text: str):
+        """Handle characterization text result."""
+        self._interpretation_panel.set_characterization(text)
+
+    def _on_validation_done(self, report: ValidationReport):
+        """Handle validation report."""
+        self._validation_report = report
+        self._validation_panel.set_report(report, animated=True)
+        self._score_badge.set_score(int(report.overall_score))
+        self._validation_cp.expand()
+
+    def _on_impurity_result(self, result: dict):
+        """Handle impurity detection result — show in interpretation panel."""
+        detected = result.get("possible_impurities", [])
+        purity = result.get("purity_assessment", "unknown")
+
+        if detected:
+            lines = [f"Purity assessment: {purity}\n"]
+            for imp in detected:
+                if isinstance(imp, dict):
+                    lines.append(
+                        f"  - {imp.get('identity', 'Unknown')}: "
+                        f"delta {imp.get('shift', '?')} ppm "
+                        f"(confidence: {imp.get('confidence', '?')})"
+                    )
+                else:
+                    lines.append(f"  - {imp}")
+            text = "\n".join(lines)
+            self._status_msg("Possible impurity peaks detected - see Interpretation tab")
+        else:
+            text = "No impurity signals detected. Sample appears pure."
+
+        # Show as cross-spectral note (appended)
+        existing = self._interpretation_panel.cross_spectral_text.toPlainText()
+        if existing:
+            self._interpretation_panel.cross_spectral_text.append(
+                f"\n\n--- Impurity Check ---\n{text}"
+            )
+        else:
+            self._interpretation_panel.set_cross_spectral(
+                f"--- Impurity Check ---\n{text}", animated=False
+            )
+
+    def _on_structure_predicted(self, smiles: str, result: object):
+        """Handle automatic structure prediction result."""
+        self._status_msg("Structure predicted successfully")
+        self._load_molecule_3d(smiles)
+        
+        # Add prediction reasoning to interpretation panel
+        if result and result.candidates:
+            lines = ["--- AI Structure Prediction ---", "Top Predicted Candidate:"]
+            top = result.candidates[0]
+            lines.append(f"  • {top.name or 'Unknown'} (Confidence: {top.confidence:.2f})")
+            if top.explanation:
+                lines.append(f"    Reasoning: {top.explanation}")
+            
+            if len(result.candidates) > 1:
+                lines.append("\nAlternative Candidates:")
+                for c in result.candidates[1:]:
+                    lines.append(f"  • {c.name or 'Unknown'} (Confidence: {c.confidence:.2f})")
+            
+            # Show in Interpretation panel
+            existing = self._interpretation_panel.cross_spectral_text.toPlainText()
+            if existing:
+                self._interpretation_panel.cross_spectral_text.append("\n\n" + "\n".join(lines))
+            else:
+                self._interpretation_panel.set_cross_spectral("\n".join(lines), animated=False)
+
+    def _on_analysis_error(self, error_msg: str):
+        """Handle analysis error."""
+        self._interpretation_panel.hide_thinking()
+        self._progress_bar.setVisible(False)
+        self._status_msg(f"Error: {error_msg[:100]}")
+
+        if self._debug:
+            QMessageBox.critical(self, "Analysis Error", error_msg)
+        else:
+            QMessageBox.warning(
+                self, "Analysis Error",
+                f"An error occurred during analysis:\n\n{error_msg[:200]}\n\n"
+                "Please check your API key and try again.",
+            )
+
+    def _on_analysis_complete(self):
+        """Handle analysis completion."""
+        self._progress_bar.setVisible(False)
+        self._status_msg("✓ Analysis complete")
+        if self._molecule and self._molecule.smiles:
+            QTimer.singleShot(200, lambda: self._load_molecule_3d(self._molecule.smiles))
+        # Build atom↔peak correlation mappings
+        self._build_correlation_mappings()
+        # Pre-compute 3D viewer features
+        self._compute_viewer_features()
+        # Launch 2D NMR correlation prediction (COSY/HSQC/HMBC)
+        self._launch_nmr_prediction()
+        # Auto-add to session
+        self._add_current_to_session()
+        # Launch tautomer enumeration
+        self._launch_tautomer_enumeration()
+        # Pre-fill predictive panels with current SMILES
+        if self._molecule and self._molecule.smiles:
+            name = self._molecule.name or ""
+            self._sar_panel.set_smiles(self._molecule.smiles, name)
+            self._admet_panel.set_smiles(self._molecule.smiles, name)
+            self._retrosynthesis_panel.set_smiles(self._molecule.smiles, name)
+        # Continue batch queue if running
+        if self._queue_running:
+            QTimer.singleShot(500, self._run_next_in_queue)
+
+    # ── Atom↔Peak Correlation ─────────────────────────────────────────────────
+
+    def _build_correlation_mappings(self):
+        """Build AtomMapper and mappings from AI results after analysis."""
+        if not self._molecule or not self._molecule.smiles:
+            return
+
+        self._atom_mapper = AtomMapper(self._molecule.smiles)
+        if not self._atom_mapper.is_valid:
+            return
+
+        if self._h1_ai_result:
+            h1_peaks = self._h1_ai_result.get("peaks", [])
+            self._h1_mappings = self._atom_mapper.map_h1_peaks(h1_peaks)
+
+        if self._c13_ai_result:
+            c13_peaks = self._c13_ai_result.get("peaks", [])
+            self._c13_mappings = self._atom_mapper.map_c13_peaks(c13_peaks)
+
+        n_mapped = sum(1 for m in self._h1_mappings + self._c13_mappings if m.atom_indices)
+        n_total = len(self._h1_mappings) + len(self._c13_mappings)
+        if n_total > 0:
+            self._status_msg(
+                f"✓ Analysis complete — {n_mapped}/{n_total} peaks mapped to atoms"
+            )
+
+    def _launch_nmr_prediction(self):
+        """Launch background thread to predict COSY/HSQC/HMBC correlations."""
+        if not self._molecule or not self._molecule.smiles:
+            return
+        if not self._h1_mappings and not self._c13_mappings:
+            return
+        if self._nmr_pred_thread and self._nmr_pred_thread.isRunning():
+            return
+
+        self._nmr_pred_thread = NMRPredictionThread(
+            self._molecule.smiles,
+            self._h1_mappings,
+            self._c13_mappings,
+            self._h1_data,
+            self._c13_data,
+            parent=self,
+        )
+        self._nmr_pred_thread.maps_ready.connect(self._on_nmr_maps_ready)
+        self._nmr_pred_thread.start()
+
+    def _on_nmr_maps_ready(self, maps: dict):
+        """Handle predicted 2D NMR correlation maps from background thread."""
+        self._correlation_maps = maps
+        if maps:
+            self._nmr_maps_panel.load_maps(maps)
+            self._nmr_maps_cp.ensure_expanded()
+            total = sum(len(m.correlations) for m in maps.values() if m)
+            self._status_msg(f"✓ 2D NMR maps: {total} correlations predicted")
+        else:
+            self._nmr_maps_panel.clear()
+
+    def _launch_tautomer_enumeration(self):
+        """Launch background tautomer enumeration."""
+        if not self._molecule or not self._molecule.smiles:
+            return
+        thread = TautomerThread(self._molecule.smiles, parent=self)
+        thread.tautomers_ready.connect(self._on_tautomers_ready)
+        thread.start()
+        self._tautomer_thread = thread  # prevent GC
+
+    def _on_tautomers_ready(self, tautomers: list):
+        """Handle tautomer enumeration results."""
+        if len(tautomers) > 1:
+            from .widgets.tautomer_carousel import TautomerCarousel
+            carousel = TautomerCarousel()
+            carousel.set_tautomers(tautomers)
+            carousel.tautomer_selected.connect(self._on_tautomer_selected)
+
+            # Add as tab to interpretation panel if not already
+            tab_name = "Tautomers"
+            tabs = self._interpretation_panel.tabs
+            for i in range(tabs.count()):
+                if tabs.tabText(i).endswith("Tautomers"):
+                    tabs.removeTab(i)
+                    break
+            tabs.addTab(carousel, tab_name)
+
+    def _on_tautomer_selected(self, smiles: str, rank: int):
+        """Load selected tautomer into 3D viewer."""
+        self._molecular_viewer.load_smiles(smiles)
+        self._status_msg(f"Showing tautomer #{rank} in 3D viewer")
+
+    def _compute_viewer_features(self):
+        """Pre-compute scaffold, HBD/HBA, charges, NMR labels for the 3D viewer."""
+        if not self._molecule or not self._molecule.smiles:
+            return
+
+        smiles = self._molecule.smiles
+        gen = ConformerGenerator()
+
+        # Gasteiger charges for surface mode
+        charges = gen.compute_partial_charges(smiles)
+        self._molecular_viewer.set_surface_charges(charges)
+
+        try:
+            from rdkit import Chem
+            from rdkit.Chem import MurckoScaffold
+
+            mol = Chem.MolFromSmiles(smiles)
+            if mol:
+                # Scaffold core — use SMARTS query to avoid aromaticity mismatch
+                try:
+                    scaffold = MurckoScaffold.GetScaffoldForMol(mol)
+                    scaffold_smarts = Chem.MolToSmarts(scaffold)
+                    query = Chem.MolFromSmarts(scaffold_smarts)
+                    if query:
+                        match = mol.GetSubstructMatch(query)
+                        if match:
+                            self._molecular_viewer.set_scaffold_atoms(list(match))
+                except Exception:
+                    pass
+
+                # HBD / HBA — separate patterns for N-H and O-H donors;
+                # acceptors include aromatic NX2 (pyridine-type nitrogen)
+                mol_h = Chem.AddHs(mol)
+                hbd = []
+                for pat_str in ("[#7;H1,H2]", "[OX2H]"):
+                    pat = Chem.MolFromSmarts(pat_str)
+                    if pat:
+                        for m in mol_h.GetSubstructMatches(pat):
+                            hbd.extend(m)
+                hba = []
+                hba_pat = Chem.MolFromSmarts("[#7,OX2,OX1-,F]")
+                if hba_pat:
+                    for m in mol_h.GetSubstructMatches(hba_pat):
+                        hba.extend(m)
+                self._molecular_viewer.set_hbd_hba(
+                    list(set(hbd)), list(set(hba))
+                )
+        except ImportError:
+            pass
+
+        # NMR label data from mappings
+        nmr_data = []
+        atom_labels: dict[int, dict] = {}
+        for m in self._h1_mappings:
+            for idx in m.atom_indices:
+                if idx not in atom_labels:
+                    atom_labels[idx] = {}
+                atom_labels[idx]["h1"] = f"{m.shift:.2f}"
+        for m in self._c13_mappings:
+            for idx in m.atom_indices:
+                if idx not in atom_labels:
+                    atom_labels[idx] = {}
+                atom_labels[idx]["c13"] = f"{m.shift:.1f}"
+        for idx, labels in atom_labels.items():
+            entry = {"index": idx}
+            entry.update(labels)
+            nmr_data.append(entry)
+        self._molecular_viewer.set_nmr_label_data(nmr_data)
+
+    def _on_conformer_ready_post(self):
+        """Called after conformers are loaded — update energy chart and re-apply features."""
+        conformers = self._molecular_viewer._conformers
+        if conformers:
+            energies = [e for _, e in conformers]
+            self._energy_chart.set_energies(energies)
+            self._energy_chart.show()
+        else:
+            self._energy_chart.hide()
+
+        # Re-apply scaffold/HBD/HBA/NMR features now that the 3D model is loaded.
+        # _compute_viewer_features() stores indices on the Python side and enables
+        # checkboxes, but the JS calls only work once _models.length > 0 in 3Dmol.
+        self._compute_viewer_features()
+
+    def _on_energy_bar_clicked(self, idx: int):
+        """Handle click on energy chart bar — jump to that conformer."""
+        viewer = self._molecular_viewer
+        if 0 <= idx < len(viewer._conformers):
+            viewer._current_idx = idx
+            viewer._display_conformer(idx)
+            viewer._update_conformer_controls()
+            self._energy_chart.set_active(idx)
+
+    def _on_atom_clicked_correlation(self, atom_idx: int):
+        """Handle atom click from 3D viewer — show correlated peaks."""
+        all_mappings = self._h1_mappings + self._c13_mappings
+        if not all_mappings:
+            self._correlation_card.clear_card()
+            self._spectrum_panel.clear_peak_highlights()
+            return
+
+        # Find peaks mapped to this atom
+        matched = []
+        for m in all_mappings:
+            if atom_idx in m.atom_indices:
+                matched.append({
+                    "shift": m.shift,
+                    "assignment": m.assignment,
+                    "nucleus": m.nucleus,
+                    "confidence": m.confidence,
+                })
+
+        # Determine element symbol
+        element = self._atom_mapper.get_element(atom_idx) if self._atom_mapper else "?"
+
+        if matched:
+            self._correlation_card.show_correlation(atom_idx, element, matched)
+            # Highlight correlated peaks on spectrum
+            self._spectrum_panel.clear_peak_highlights()
+            for p in matched:
+                self._spectrum_panel.highlight_peak(p["shift"], p["nucleus"])
+            # Bidirectional: highlight matching correlations in 2D NMR maps
+            corrs = self._nmr_maps_panel.find_correlations_for_atom(atom_idx)
+            if corrs:
+                first = corrs[0]
+                self._nmr_maps_panel.highlight_correlation(
+                    first.h_shift, first.x_shift, first.corr_type,
+                )
+        else:
+            self._correlation_card.clear_card()
+            self._spectrum_panel.clear_peak_highlights()
+
+    def _on_peak_clicked_correlation(self, shift: float, nucleus: str):
+        """Handle peak click from spectrum/interpretation panel — highlight atoms in 3D."""
+        mappings = self._h1_mappings if nucleus == "1H" else self._c13_mappings
+        if not mappings or not self._atom_mapper:
+            return
+
+        tol = 0.3 if nucleus == "1H" else 2.0
+        indices = self._atom_mapper.get_atoms_for_shift(shift, mappings, tolerance=tol)
+        if indices:
+            color = "#EC4899" if nucleus == "1H" else "#8B5CF6"
+            label = f"δ {shift:.2f}" if nucleus == "1H" else f"δ {shift:.1f}"
+            self._molecular_viewer.highlight_atoms(indices, color, label)
+            self._molecular_viewer.rotate_to_atom(indices[0])
+
+            # Also highlight on spectrum panel
+            self._spectrum_panel.clear_peak_highlights()
+            self._spectrum_panel.highlight_peak(shift, nucleus, color)
+
+            # Show correlation card
+            element = self._atom_mapper.get_element(indices[0]) if indices else "?"
+            peaks_for_card = []
+            for m in mappings:
+                if abs(m.shift - shift) <= tol:
+                    peaks_for_card.append({
+                        "shift": m.shift,
+                        "assignment": m.assignment,
+                        "nucleus": m.nucleus,
+                        "confidence": m.confidence,
+                    })
+            if peaks_for_card:
+                self._correlation_card.show_correlation(-1, element, peaks_for_card)
+        else:
+            self._molecular_viewer.clear_highlight()
+            self._correlation_card.clear_card()
+
+    def _on_ir_band_clicked_correlation(self, wavenumber: float, assignment: str):
+        """Handle IR band click — highlight matching bonds in 3D."""
+        if not self._atom_mapper or not self._atom_mapper.is_valid:
+            return
+
+        bond_pairs = self._atom_mapper.map_ir_to_bonds(wavenumber)
+        group_name = assignment or self._atom_mapper.get_ir_group_name(wavenumber)
+
+        if bond_pairs:
+            self._molecular_viewer.highlight_bonds(bond_pairs, "#F59E0B")
+            # Show info in correlation card
+            self._correlation_card.show_correlation(
+                atom_idx=-1,
+                element="IR",
+                peaks=[{
+                    "shift": wavenumber,
+                    "assignment": group_name or f"{wavenumber:.0f} cm⁻¹",
+                    "nucleus": "IR",
+                    "confidence": f"{len(bond_pairs)} bond(s)",
+                }],
+            )
+        else:
+            self._molecular_viewer.clear_highlight()
+            self._correlation_card.clear_card()
+
+    def _on_correlation_clicked(self, corr):
+        """Handle click on a 2D NMR correlation — highlight atoms in 3D and spectrum."""
+        if not corr:
+            return
+
+        # Highlight the two correlated atoms in 3D viewer
+        atoms = [corr.h_atom_idx, corr.x_atom_idx]
+        color_map = {"COSY": "#06B6D4", "HSQC": "#10B981", "HMBC": "#F59E0B"}
+        color = color_map.get(corr.corr_type, "#EC4899")
+        label = f"{corr.corr_type}: {corr.h_label}↔{corr.x_label}"
+        self._molecular_viewer.highlight_atoms(atoms, color, label)
+
+        # Rotate to midpoint of the two atoms
+        if corr.h_atom_idx >= 0:
+            self._molecular_viewer.rotate_to_atom(corr.h_atom_idx)
+
+        # Show in correlation card
+        self._correlation_card.show_for_correlation(corr)
+
+        # Highlight the H-shift on 1D spectrum
+        self._spectrum_panel.clear_peak_highlights()
+        self._spectrum_panel.highlight_peak(corr.h_shift, "1H", color)
+        if corr.corr_type != "COSY":
+            self._spectrum_panel.highlight_peak(corr.x_shift, "13C", color)
+
+        self._status_msg(
+            f"{corr.corr_type}: {corr.h_label} (δ {corr.h_shift:.2f}) ↔ "
+            f"{corr.x_label} (δ {corr.x_shift:.1f}) — {corr.bond_path}-bond path"
+        )
+
+    def _on_measurement(self, mtype: str, value: float, atoms_json: str):
+        """Handle measurement from 3D viewer — show in status bar."""
+        symbols = {"distance": "↔", "angle": "∠", "dihedral": "⟲"}
+        icon = symbols.get(mtype, "")
+        unit = "Å" if mtype == "distance" else "°"
+        self._status_msg(f"{icon} {mtype.capitalize()}: {value:.2f}{unit}")
+
+    # ── File Operations ───────────────────────────────────────────────────────
+
+    def _open_compound_file(self):
+        """Open a compound JSON file."""
+        filepath, _ = QFileDialog.getOpenFileName(
+            self, "Open Compound", "",
+            "JSON Files (*.json);;All Files (*)",
+        )
+        if not filepath:
+            return
+
+        try:
+            mol = Molecule.from_json_file(filepath)
+            self._load_molecule(mol)
+            self._status_msg(f"Loaded: {mol.name or mol.compound_id}")
+        except Exception as e:
+            QMessageBox.critical(self, "Load Error", f"Could not load file:\n{e}")
+
+    def _import_from_image_pdf(self):
+        """Import spectra from an image or PDF using AI."""
+        file_paths, _ = QFileDialog.getOpenFileNames(
+            self, "Import Spectra from Image/PDF", "",
+            "Images/PDFs (*.png *.jpg *.jpeg *.pdf);;All Files (*)"
+        )
+        if not file_paths:
+            return
+
+        if not self._llm or not self._llm.is_configured:
+            QMessageBox.warning(self, "API Not Configured", "Please configure your API key in Settings before using this feature.")
+            return
+
+        self._status_msg(f"Parsing {len(file_paths)} file(s) via AI...")
+        self._progress_bar.setVisible(True)
+        self._progress_bar.setRange(0, 0)
+        
+        self._image_worker = ImageParseWorker(file_paths, self._llm)
+        self._image_worker.result_ready.connect(self._on_image_parsed)
+        self._image_worker.error_occurred.connect(self._on_analysis_error)
+        self._image_worker.start()
+
+    def _on_image_parsed(self, result: dict):
+        self._progress_bar.setVisible(False)
+        try:
+            mol = Molecule.from_dict(result)
+            self._load_molecule(mol)
+            self._status_msg("Successfully imported spectra.")
+            # Auto-run analysis for better UX
+            self._run_analysis()
+        except Exception as e:
+            self._on_analysis_error(f"Failed to load data: {e}")
+
+    def _save_compound_file(self):
+        """Save current compound data to JSON."""
+        if not self._molecule:
+            QMessageBox.information(self, "Nothing to Save", "No compound data to save.")
+            return
+
+        filepath, _ = QFileDialog.getSaveFileName(
+            self, "Save Compound", f"{self._molecule.compound_id or 'compound'}.json",
+            "JSON Files (*.json);;All Files (*)",
+        )
+        if not filepath:
+            return
+
+        try:
+            self._molecule.save_json(filepath)
+            self._status_msg(f"Saved to {filepath}")
+        except Exception as e:
+            QMessageBox.critical(self, "Save Error", f"Could not save file:\n{e}")
+
+    def _import_csv(self):
+        """Import compounds from CSV — add to session."""
+        filepath, _ = QFileDialog.getOpenFileName(
+            self, "Import CSV", "",
+            "CSV Files (*.csv);;TSV Files (*.tsv);;All Files (*)",
+        )
+        if not filepath:
+            return
+        try:
+            from ..parsers.csv_parser import parse_compound_csv
+            molecules = parse_compound_csv(filepath)
+            for mol in molecules:
+                cid = mol.compound_id or mol.name or f"csv_{id(mol)}"
+                record = CompoundRecord(
+                    compound_id=cid, molecule=mol,
+                    analysis_complete=False,
+                )
+                self._session.add_record(record)
+            self._mode_nav.set_mode(ModeNavigator.MODE_SESSION)
+            self._status_msg(f"Imported {len(molecules)} compounds from CSV")
+        except Exception as e:
+            QMessageBox.critical(self, "Import Error", f"Could not import CSV:\n{e}")
+
+    def _export_pdf(self):
+        """Export a PDF report for the current compound."""
+        if not self._molecule:
+            QMessageBox.information(self, "Export PDF", "Please analyse a compound first.")
+            return
+        filepath, _ = QFileDialog.getSaveFileName(
+            self, "Save PDF Report",
+            f"{self._molecule.name or 'compound'}_SpectraAI_Report.pdf",
+            "PDF Files (*.pdf)",
+        )
+        if not filepath:
+            return
+        try:
+            from ..utils.pdf_generator import PDFGenerator
+            gen = PDFGenerator()
+            ok = gen.generate(
+                filepath=filepath,
+                molecule=self._molecule,
+                h1_data=self._h1_data,
+                c13_data=self._c13_data,
+                ir_data=self._ir_data,
+                ms_data=self._ms_data,
+                validation_report=getattr(self, "_validation_report", None),
+                interpretation_text=self._interpretation_panel.interpretation_text.toPlainText(),
+                characterization_text=self._interpretation_panel.characterization_text.toPlainText(),
+            )
+            if ok:
+                self._status_msg(f"PDF saved: {filepath}")
+            else:
+                QMessageBox.warning(self, "Export PDF", "PDF generation failed.")
+        except Exception as e:
+            QMessageBox.critical(self, "PDF Error", f"Failed to generate PDF:\n{e}")
+
+    # ── Helpers ───────────────────────────────────────────────────────────────
+
+    def _load_molecule(self, mol: Molecule):
+        """Load a molecule into the input panel and populate all fields."""
+        self._molecule = mol
+
+        # ── Molecule identity fields ──
+        self._input_panel.name_input.setText(mol.name or "")
+        self._input_panel.smiles_input.setText(mol.smiles or "")
+        self._input_panel.formula_input.setText(mol.formula or "")
+
+        # Scaffold combo box
+        scaffold = mol.metadata.scaffold_family if mol.metadata else ""
+        idx = self._input_panel.scaffold_combo.findData(scaffold)
+        if idx >= 0:
+            self._input_panel.scaffold_combo.setCurrentIndex(idx)
+
+        # ── Spectral data fields (use raw_text from dicts) ──
+        if mol._h1_nmr and isinstance(mol._h1_nmr, dict):
+            self._input_panel.h1_input.setPlainText(mol._h1_nmr.get("raw_text", ""))
+            # Set solvent from NMR data
+            solvent = mol._h1_nmr.get("solvent", "")
+            if solvent:
+                s_idx = self._input_panel.solvent_combo.findText(solvent)
+                if s_idx >= 0:
+                    self._input_panel.solvent_combo.setCurrentIndex(s_idx)
+            # Set frequency from NMR data
+            freq = mol._h1_nmr.get("frequency")
+            if freq:
+                f_idx = self._input_panel.freq_combo.findData(freq)
+                if f_idx >= 0:
+                    self._input_panel.freq_combo.setCurrentIndex(f_idx)
+
+        if mol._c13_nmr and isinstance(mol._c13_nmr, dict):
+            self._input_panel.c13_input.setPlainText(mol._c13_nmr.get("raw_text", ""))
+
+        if mol._ir and isinstance(mol._ir, dict):
+            self._input_panel.ir_input.setPlainText(mol._ir.get("raw_text", ""))
+
+        if mol._hrms and isinstance(mol._hrms, dict):
+            self._input_panel.ms_input.setPlainText(mol._hrms.get("raw_text", ""))
+
+        # ── Melting point ──
+        if mol.melting_point:
+            self._input_panel.mp_low.setValue(mol.melting_point[0])
+            if len(mol.melting_point) > 1:
+                self._input_panel.mp_high.setValue(mol.melting_point[1])
+
+        # ── Update completeness ring ──
+        self._input_panel._update_completeness()
+
+        self._status_msg(f"Loaded compound: {mol.name}")
+
+        if mol.smiles:
+            QTimer.singleShot(200, lambda: self._load_molecule_3d(mol.smiles))
+
+    # ── Session / Batch / Comparison ────────────────────────────────────────
+
+    def _add_current_to_session(self):
+        """Add the currently analysed compound to the session."""
+        if not self._molecule:
+            self._status_msg("No compound to add")
+            return
+        from datetime import datetime
+        cid = (self._molecule.compound_id
+               or self._molecule.name
+               or f"compound_{datetime.now().strftime('%H%M%S')}")
+        record = CompoundRecord(
+            compound_id=cid,
+            molecule=self._molecule,
+            h1_data=self._h1_data,
+            c13_data=self._c13_data,
+            ir_data=self._ir_data,
+            ms_data=self._ms_data,
+            validation_report=getattr(self, "_validation_report", None),
+            h1_result=self._h1_ai_result,
+            c13_result=self._c13_ai_result,
+            atom_mapper=self._atom_mapper,
+            h1_mappings=list(self._h1_mappings),
+            c13_mappings=list(self._c13_mappings),
+            correlation_maps=self._correlation_maps,
+            analysis_complete=True,
+        )
+        existing = self._session.get_by_id(cid)
+        if existing:
+            idx = self._session.records.index(existing)
+            self._session.records[idx] = record
+            self._batch_panel.update_compound(
+                cid, score=record.overall_score(), status="Complete")
+        else:
+            self._session.add_record(record)
+            self._session.set_active(self._session.count() - 1)
+        self._status_msg(f"Added to session: {record.display_name()}")
+
+    def _on_session_record_added(self, record: CompoundRecord):
+        """Callback from CompoundSession when a record is added."""
+        self._batch_panel.add_compound(
+            record.compound_id,
+            record.display_name(),
+            record.molecule.formula if record.molecule else "",
+            record.overall_score(),
+            record.status_label(),
+            record.thumbnail_svg,
+        )
+        self._session_label.setText(f"  {self._session.count()} compounds in session")
+        self._mode_nav.set_session_badge(self._session.count())
+
+    def _on_session_record_removed(self, index: int):
+        self._session_label.setText(f"  {self._session.count()} compounds in session")
+        self._mode_nav.set_session_badge(self._session.count())
+
+    def _on_compound_selected(self, compound_id: str):
+        """Handle compound selection from batch panel — restore state."""
+        record = self._session.get_by_id(compound_id)
+        if not record:
+            return
+
+        # Switch to analysis mode
+        self._mode_nav.set_mode(ModeNavigator.MODE_ANALYSIS)
+
+        if not record.analysis_complete:
+            self._status_msg(f"Compound '{record.display_name()}' not yet analysed")
+            return
+
+        # Restore molecule + spectral data
+        self._load_molecule(record.molecule)
+        self._h1_data = record.h1_data
+        self._c13_data = record.c13_data
+        self._ir_data = record.ir_data
+        self._ms_data = record.ms_data
+        self._h1_ai_result = record.h1_result
+        self._c13_ai_result = record.c13_result
+        self._atom_mapper = record.atom_mapper
+        self._h1_mappings = record.h1_mappings or []
+        self._c13_mappings = record.c13_mappings or []
+        self._correlation_maps = record.correlation_maps
+
+        # Restore validation
+        if record.validation_report:
+            self._validation_panel.set_report(record.validation_report)
+            score = record.overall_score()
+            if score is not None:
+                self._score_badge.set_score(score)
+
+        # Restore 2D NMR maps
+        if record.correlation_maps:
+            self._nmr_maps_panel.load_maps(record.correlation_maps)
+
+        # Restore 3D viewer
+        if record.molecule and record.molecule.smiles:
+            QTimer.singleShot(200, lambda: self._load_molecule_3d(record.molecule.smiles))
+
+        self._batch_panel.set_active(compound_id)
+        idx = self._session.records.index(record)
+        self._session.set_active(idx)
+        self._status_msg(f"Loaded: {record.display_name()}")
+
+    def _on_batch_analyse(self, compound_ids: list):
+        """Handle batch analyse request — queue sequential analysis."""
+        pending = [cid for cid in compound_ids
+                   if self._session.get_by_id(cid) and not self._session.get_by_id(cid).analysis_complete]
+        if not pending:
+            self._status_msg("No pending compounds to analyse")
+            return
+        self._analysis_queue = pending
+        self._queue_running = True
+        self._run_next_in_queue()
+
+    def _run_next_in_queue(self):
+        """Process the next compound in the batch analysis queue."""
+        if not self._analysis_queue:
+            self._queue_running = False
+            self._status_msg("Batch analysis complete")
+            return
+
+        compound_id = self._analysis_queue.pop(0)
+        record = self._session.get_by_id(compound_id)
+        if not record or not record.molecule:
+            self._run_next_in_queue()
+            return
+
+        self._batch_panel.update_compound(compound_id, status="Analysing")
+        self._load_molecule(record.molecule)
+        self._status_msg(
+            f"Batch: analysing {record.display_name()} "
+            f"({len(self._analysis_queue)} remaining)"
+        )
+        self._run_analysis()
+
+    def _on_compare_requested(self, id_a: str, id_b: str):
+        """Handle compare request from batch panel."""
+        record_a = self._session.get_by_id(id_a)
+        record_b = self._session.get_by_id(id_b)
+
+        if not record_a or not record_b:
+            QMessageBox.warning(self, "Compare",
+                                "Both compounds must be in the session.")
+            return
+        if not record_a.analysis_complete or not record_b.analysis_complete:
+            QMessageBox.information(self, "Compare",
+                                    "Please analyse both compounds before comparing.")
+            return
+
+        self._comparison_panel.load_comparison(record_a, record_b)
+        self._mode_nav.set_mode(ModeNavigator.MODE_COMPARE)
+
+    def _exit_comparison(self):
+        """Exit comparison mode and return to analysis."""
+        self._mode_nav.set_mode(ModeNavigator.MODE_ANALYSIS)
+
+    def keyPressEvent(self, event):
+        """Handle global key events."""
+        if event.key() == Qt.Key_Escape:
+            if self._mode_nav.current_mode() == ModeNavigator.MODE_COMPARE:
+                self._exit_comparison()
+                return
+        super().keyPressEvent(event)
+
+    # ── AI-Powered Predictive Feature Handlers ──────────────────────────────
+
+    def _on_retrosynthesis_plan(self, data: dict):
+        """Handle retrosynthesis planning request — runs in background thread."""
+        if not self._llm or not self._llm.is_configured:
+            self._retrosynthesis_panel.set_result("<p style='color:#F59E0B;'>Configure API key in Settings first.</p>")
+            return
+
+        smiles = data.get("smiles", "")
+        if not smiles:
+            return
+
+        self._status_msg("Running AI retrosynthetic analysis...")
+        self._retrosynthesis_panel.set_result(
+            "<p style='color:#94A3B8;'>Planning retrosynthetic routes...</p>"
+        )
+
+        scaffold = ""
+        formula = ""
+        if self._molecule:
+            scaffold = (self._molecule.metadata.scaffold_family or "") if self._molecule.metadata else ""
+            formula = self._molecule.formula or ""
+
+        thread = _PredictiveWorker(
+            task="retrosynthesis",
+            llm=self._llm,
+            smiles=smiles,
+            name=data.get("name", ""),
+            formula=formula,
+            scaffold_family=scaffold,
+            extra={
+                "max_steps": data.get("max_steps", 8),
+                "num_routes": data.get("num_routes", 3),
+                "constraints": data.get("constraints", ""),
+            },
+            parent=self,
+        )
+        thread.result_ready.connect(self._on_retrosynthesis_result)
+        thread.error_occurred.connect(
+            lambda e: self._retrosynthesis_panel.set_result(f"<p style='color:#EF4444;'>Error: {e}</p>")
+        )
+        thread.finished.connect(thread.deleteLater)
+        thread.start()
+
+    def _on_retrosynthesis_result(self, result: dict):
+        """Display retrosynthesis planning results."""
+        html = predictive_formatter.format_retrosynthesis(result)
+        self._retrosynthesis_panel.set_result(html)
+        self._status_msg("Retrosynthetic analysis complete")
+
+        smiles = self._retrosynthesis_panel.get_plan_data().get("smiles", "")
+        if smiles:
+            self._load_molecule_3d(smiles)
+            self._right_tabs.setCurrentIndex(0)
+
+    def _clear_all(self):
+        """Clear all panels and reset state."""
+        self._molecule = None
+        self._h1_data = None
+        self._c13_data = None
+        self._ir_data = None
+        self._ms_data = None
+        self._h1_ai_result = None
+        self._c13_ai_result = None
+        self._atom_mapper = None
+        self._h1_mappings = []
+        self._c13_mappings = []
+        self._correlation_maps = None
+        self._input_panel._clear_all()
+        self._spectrum_panel.clear_all()
+        self._spectrum_panel.clear_peak_highlights()
+        self._interpretation_panel.clear_all()
+        self._validation_panel.clear_all()
+        self._molecular_viewer.clear()
+        self._correlation_card.clear_card()
+        self._energy_chart.clear()
+        self._energy_chart.hide()
+        self._nmr_maps_panel.clear()
+        self._retrosynthesis_panel.clear()
+        self._score_badge.clear_score()
+        self._status_msg("Cleared all data")
+
+    def _load_molecule_3d(self, smiles: str):
+        """Trigger 3D conformer generation for the given SMILES."""
+        self._molecular_viewer.load_smiles(smiles)
+
+    def _focus_validation_panel(self):
+        """Expand the Validation CollapsiblePanel and scroll to it."""
+        self._validation_cp.expand()
+
+    def _save_splitter_state(self):
+        """Persist main splitter column widths."""
+        settings = QSettings("SpectraAI", "SpectraAI")
+        settings.setValue("splitter/main_v2/sizes", self._main_splitter.sizes())
+
+    def _open_settings(self):
+        """Open the settings dialog."""
+        dialog = SettingsDialog(self._api_provider, self)
+        if dialog.exec_() == QDialog.Accepted:
+            settings = dialog.get_settings()
+            self._api_provider = settings["provider"]
+
+            # Set environment variables
+            if settings["claude_key"]:
+                os.environ["ANTHROPIC_API_KEY"] = settings["claude_key"]
+            if settings["gemini_key"]:
+                os.environ["GOOGLE_API_KEY"] = settings["gemini_key"]
+
+            # Reinitialize client
+            self._init_llm_client()
+            self._status_msg(f"Settings updated — Provider: {self._api_provider}")
+
+    def _predict_structure(self):
+        """Launch structure prediction (Phase 2 feature)."""
+        QMessageBox.information(
+            self, "Structure Prediction",
+            "Structure prediction from spectra will be available in Phase 2.",
+        )
+
+    def _show_about(self):
+        """Show the About dialog."""
+        QMessageBox.about(
+            self, "About SpectraAI",
+            f"<h2>SpectraAI Suite</h2>"
+            f"<p>Version {__version__}</p>"
+            f"<p>Multi-Spectral Generative AI Suite for<br>"
+            f"Heterocycle Characterization in Synthetic<br>"
+            f"Organic Chemistry</p>"
+            f"<p style='color:#8b949e;'>Combining Claude/Gemini AI with<br>"
+            f"scaffold-constrained spectral reasoning</p>"
+            f"<hr>"
+            f"<p style='font-size:11px;'>Research Collaboration<br>"
+            f"BITS Pilani</p>",
+        )
+
+    def _status_msg(self, msg: str):
+        """Update the status bar message."""
+        self._statusbar.showMessage(msg, 10000)
+
+    def closeEvent(self, event):
+        """Handle window close."""
+        if self._worker and self._worker.isRunning():
+            self._worker.cancel()
+            self._worker.wait(2000)
+        event.accept()

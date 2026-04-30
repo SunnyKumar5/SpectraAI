@@ -1,0 +1,833 @@
+{
+  "scaffold_id": "SCAF-015",
+  "scaffold_name": "thiophene",
+  "display_name": "Thiophene",
+  "core_smiles": "c1ccsc1",
+  "core_smarts": "c1ccsc1",
+  "numbering_image_ref": "thiophene_numbering.png",
+  "positions": {
+    "2": {
+      "atom_type": "C",
+      "hybridization": "sp2",
+      "is_ring_junction": false,
+      "is_bridgehead": false,
+      "substitutable": true,
+      "default_H_count": 1,
+      "notes": "α-position to sulfur"
+    },
+    "3": {
+      "atom_type": "C",
+      "hybridization": "sp2",
+      "is_ring_junction": false,
+      "is_bridgehead": false,
+      "substitutable": true,
+      "default_H_count": 1,
+      "notes": "β-position to sulfur"
+    },
+    "4": {
+      "atom_type": "C",
+      "hybridization": "sp2",
+      "is_ring_junction": false,
+      "is_bridgehead": false,
+      "substitutable": true,
+      "default_H_count": 1,
+      "notes": "β-position to sulfur"
+    },
+    "5": {
+      "atom_type": "C",
+      "hybridization": "sp2",
+      "is_ring_junction": false,
+      "is_bridgehead": false,
+      "substitutable": true,
+      "default_H_count": 1,
+      "notes": "α-position to sulfur"
+    },
+    "1": {
+      "atom_type": "S",
+      "hybridization": "sp2",
+      "is_ring_junction": false,
+      "is_bridgehead": false,
+      "substitutable": false,
+      "default_H_count": 0,
+      "notes": "Heteroatom"
+    }
+  },
+  "h1_shifts": {
+    "2": {
+      "base_shift": 7.31,
+      "range": [
+        7.2,
+        7.4
+      ],
+      "typical_multiplicity": "dd",
+      "typical_J": "J = 5.1, 1.2 Hz",
+      "substituent_effects": [
+        {
+          "substituent": "-OMe",
+          "position_of_substituent": "3",
+          "delta_shift": -0.45,
+          "new_range": [
+            6.75,
+            6.95
+          ],
+          "note": "Strong upfield shift due to electron donation"
+        },
+        {
+          "substituent": "-OH",
+          "position_of_substituent": "3",
+          "delta_shift": -0.38,
+          "new_range": [
+            6.85,
+            7.05
+          ],
+          "note": "Upfield shift from electron donation"
+        },
+        {
+          "substituent": "-NH2",
+          "position_of_substituent": "3",
+          "delta_shift": -0.52,
+          "new_range": [
+            6.7,
+            6.9
+          ],
+          "note": "Strong electron donation"
+        },
+        {
+          "substituent": "-NO2",
+          "position_of_substituent": "3",
+          "delta_shift": 0.65,
+          "new_range": [
+            7.85,
+            8.05
+          ],
+          "note": "Strong electron withdrawal"
+        },
+        {
+          "substituent": "-Cl",
+          "position_of_substituent": "3",
+          "delta_shift": -0.15,
+          "new_range": [
+            7.05,
+            7.25
+          ],
+          "note": "Weak electron donation"
+        },
+        {
+          "substituent": "-Br",
+          "position_of_substituent": "3",
+          "delta_shift": -0.08,
+          "new_range": [
+            7.12,
+            7.32
+          ],
+          "note": "Weak electron donation"
+        },
+        {
+          "substituent": "-F",
+          "position_of_substituent": "3",
+          "delta_shift": -0.25,
+          "new_range": [
+            6.95,
+            7.15
+          ],
+          "note": "Electron donation by resonance"
+        },
+        {
+          "substituent": "-CF3",
+          "position_of_substituent": "3",
+          "delta_shift": 0.35,
+          "new_range": [
+            7.55,
+            7.75
+          ],
+          "note": "Strong electron withdrawal"
+        },
+        {
+          "substituent": "-CN",
+          "position_of_substituent": "3",
+          "delta_shift": 0.45,
+          "new_range": [
+            7.65,
+            7.85
+          ],
+          "note": "Electron withdrawal"
+        },
+        {
+          "substituent": "-Ph",
+          "position_of_substituent": "3",
+          "delta_shift": 0.15,
+          "new_range": [
+            7.35,
+            7.55
+          ],
+          "note": "Weak electron withdrawal"
+        },
+        {
+          "substituent": "-CO2Me",
+          "position_of_substituent": "3",
+          "delta_shift": 0.55,
+          "new_range": [
+            7.75,
+            7.95
+          ],
+          "note": "Strong electron withdrawal"
+        },
+        {
+          "substituent": "-CHO",
+          "position_of_substituent": "3",
+          "delta_shift": 0.68,
+          "new_range": [
+            7.88,
+            8.08
+          ],
+          "note": "Strong electron withdrawal"
+        }
+      ],
+      "solvent_effects": {
+        "CDCl3": 7.31,
+        "DMSO-d6": 7.58,
+        "CD3OD": 7.42,
+        "D2O": 7.65
+      }
+    },
+    "3": {
+      "base_shift": 7.05,
+      "range": [
+        6.95,
+        7.15
+      ],
+      "typical_multiplicity": "dd",
+      "typical_J": "J = 5.1, 3.6 Hz",
+      "substituent_effects": [
+        {
+          "substituent": "-OMe",
+          "position_of_substituent": "2",
+          "delta_shift": -0.25,
+          "new_range": [
+            6.7,
+            6.9
+          ],
+          "note": "Upfield shift from ortho substitution"
+        },
+        {
+          "substituent": "-OH",
+          "position_of_substituent": "2",
+          "delta_shift": -0.18,
+          "new_range": [
+            6.77,
+            6.97
+          ],
+          "note": "Upfield shift"
+        },
+        {
+          "substituent": "-NH2",
+          "position_of_substituent": "2",
+          "delta_shift": -0.32,
+          "new_range": [
+            6.63,
+            6.83
+          ],
+          "note": "Strong upfield shift"
+        },
+        {
+          "substituent": "-NO2",
+          "position_of_substituent": "2",
+          "delta_shift": 0.45,
+          "new_range": [
+            7.4,
+            7.6
+          ],
+          "note": "Downfield shift"
+        },
+        {
+          "substituent": "-Cl",
+          "position_of_substituent": "2",
+          "delta_shift": 0.08,
+          "new_range": [
+            7.03,
+            7.23
+          ],
+          "note": "Small downfield shift"
+        },
+        {
+          "substituent": "-Br",
+          "position_of_substituent": "2",
+          "delta_shift": 0.12,
+          "new_range": [
+            7.07,
+            7.27
+          ],
+          "note": "Small downfield shift"
+        },
+        {
+          "substituent": "-F",
+          "position_of_substituent": "2",
+          "delta_shift": -0.05,
+          "new_range": [
+            6.9,
+            7.1
+          ],
+          "note": "Minimal effect"
+        },
+        {
+          "substituent": "-CF3",
+          "position_of_substituent": "2",
+          "delta_shift": 0.25,
+          "new_range": [
+            7.2,
+            7.4
+          ],
+          "note": "Downfield shift"
+        }
+      ],
+      "solvent_effects": {
+        "CDCl3": 7.05,
+        "DMSO-d6": 7.32,
+        "CD3OD": 7.18,
+        "D2O": 7.38
+      }
+    },
+    "4": {
+      "base_shift": 7.05,
+      "range": [
+        6.95,
+        7.15
+      ],
+      "typical_multiplicity": "dd",
+      "typical_J": "J = 3.6, 1.2 Hz",
+      "substituent_effects": [
+        {
+          "substituent": "-OMe",
+          "position_of_substituent": "5",
+          "delta_shift": -0.25,
+          "new_range": [
+            6.7,
+            6.9
+          ],
+          "note": "Upfield shift from ortho substitution"
+        },
+        {
+          "substituent": "-OH",
+          "position_of_substituent": "5",
+          "delta_shift": -0.18,
+          "new_range": [
+            6.77,
+            6.97
+          ],
+          "note": "Upfield shift"
+        },
+        {
+          "substituent": "-NH2",
+          "position_of_substituent": "5",
+          "delta_shift": -0.32,
+          "new_range": [
+            6.63,
+            6.83
+          ],
+          "note": "Strong upfield shift"
+        },
+        {
+          "substituent": "-NO2",
+          "position_of_substituent": "5",
+          "delta_shift": 0.45,
+          "new_range": [
+            7.4,
+            7.6
+          ],
+          "note": "Downfield shift"
+        },
+        {
+          "substituent": "-Cl",
+          "position_of_substituent": "5",
+          "delta_shift": 0.08,
+          "new_range": [
+            7.03,
+            7.23
+          ],
+          "note": "Small downfield shift"
+        },
+        {
+          "substituent": "-Br",
+          "position_of_substituent": "5",
+          "delta_shift": 0.12,
+          "new_range": [
+            7.07,
+            7.27
+          ],
+          "note": "Small downfield shift"
+        },
+        {
+          "substituent": "-F",
+          "position_of_substituent": "5",
+          "delta_shift": -0.05,
+          "new_range": [
+            6.9,
+            7.1
+          ],
+          "note": "Minimal effect"
+        },
+        {
+          "substituent": "-CF3",
+          "position_of_substituent": "5",
+          "delta_shift": 0.25,
+          "new_range": [
+            7.2,
+            7.4
+          ],
+          "note": "Downfield shift"
+        }
+      ],
+      "solvent_effects": {
+        "CDCl3": 7.05,
+        "DMSO-d6": 7.32,
+        "CD3OD": 7.18,
+        "D2O": 7.38
+      }
+    },
+    "5": {
+      "base_shift": 7.31,
+      "range": [
+        7.2,
+        7.4
+      ],
+      "typical_multiplicity": "dd",
+      "typical_J": "J = 3.6, 1.2 Hz",
+      "substituent_effects": [
+        {
+          "substituent": "-OMe",
+          "position_of_substituent": "4",
+          "delta_shift": -0.45,
+          "new_range": [
+            6.75,
+            6.95
+          ],
+          "note": "Strong upfield shift due to electron donation"
+        },
+        {
+          "substituent": "-OH",
+          "position_of_substituent": "4",
+          "delta_shift": -0.38,
+          "new_range": [
+            6.85,
+            7.05
+          ],
+          "note": "Upfield shift from electron donation"
+        },
+        {
+          "substituent": "-NH2",
+          "position_of_substituent": "4",
+          "delta_shift": -0.52,
+          "new_range": [
+            6.7,
+            6.9
+          ],
+          "note": "Strong electron donation"
+        },
+        {
+          "substituent": "-NO2",
+          "position_of_substituent": "4",
+          "delta_shift": 0.65,
+          "new_range": [
+            7.85,
+            8.05
+          ],
+          "note": "Strong electron withdrawal"
+        },
+        {
+          "substituent": "-Cl",
+          "position_of_substituent": "4",
+          "delta_shift": -0.15,
+          "new_range": [
+            7.05,
+            7.25
+          ],
+          "note": "Weak electron donation"
+        },
+        {
+          "substituent": "-Br",
+          "position_of_substituent": "4",
+          "delta_shift": -0.08,
+          "new_range": [
+            7.12,
+            7.32
+          ],
+          "note": "Weak electron donation"
+        },
+        {
+          "substituent": "-F",
+          "position_of_substituent": "4",
+          "delta_shift": -0.25,
+          "new_range": [
+            6.95,
+            7.15
+          ],
+          "note": "Electron donation by resonance"
+        },
+        {
+          "substituent": "-CF3",
+          "position_of_substituent": "4",
+          "delta_shift": 0.35,
+          "new_range": [
+            7.55,
+            7.75
+          ],
+          "note": "Strong electron withdrawal"
+        }
+      ],
+      "solvent_effects": {
+        "CDCl3": 7.31,
+        "DMSO-d6": 7.58,
+        "CD3OD": 7.42,
+        "D2O": 7.65
+      }
+    }
+  },
+  "c13_shifts": {
+    "2": {
+      "base_shift": 127.1,
+      "range": [
+        126.5,
+        127.8
+      ],
+      "carbon_type": "CH",
+      "dept_phase": "up",
+      "substituent_effects": [
+        {
+          "substituent": "-OMe",
+          "position_of_substituent": "3",
+          "delta_shift": -15.2,
+          "new_range": [
+            111.0,
+            112.5
+          ],
+          "note": "Strong upfield shift"
+        },
+        {
+          "substituent": "-OH",
+          "position_of_substituent": "3",
+          "delta_shift": -12.8,
+          "new_range": [
+            113.5,
+            115.0
+          ],
+          "note": "Upfield shift"
+        },
+        {
+          "substituent": "-NO2",
+          "position_of_substituent": "3",
+          "delta_shift": 8.5,
+          "new_range": [
+            135.0,
+            136.5
+          ],
+          "note": "Downfield shift"
+        },
+        {
+          "substituent": "-Cl",
+          "position_of_substituent": "3",
+          "delta_shift": -2.8,
+          "new_range": [
+            123.5,
+            125.0
+          ],
+          "note": "Small upfield shift"
+        },
+        {
+          "substituent": "-Br",
+          "position_of_substituent": "3",
+          "delta_shift": -1.5,
+          "new_range": [
+            125.0,
+            126.5
+          ],
+          "note": "Small upfield shift"
+        },
+        {
+          "substituent": "-CF3",
+          "position_of_substituent": "3",
+          "delta_shift": 5.2,
+          "new_range": [
+            131.5,
+            133.0
+          ],
+          "note": "Downfield shift"
+        }
+      ]
+    },
+    "3": {
+      "base_shift": 124.3,
+      "range": [
+        123.8,
+        124.8
+      ],
+      "carbon_type": "CH",
+      "dept_phase": "up",
+      "substituent_effects": [
+        {
+          "substituent": "-OMe",
+          "position_of_substituent": "2",
+          "delta_shift": 2.5,
+          "new_range": [
+            126.3,
+            127.3
+          ],
+          "note": "Small downfield shift"
+        },
+        {
+          "substituent": "-OH",
+          "position_of_substituent": "2",
+          "delta_shift": 1.8,
+          "new_range": [
+            125.6,
+            126.6
+          ],
+          "note": "Small downfield shift"
+        },
+        {
+          "substituent": "-NO2",
+          "position_of_substituent": "2",
+          "delta_shift": -3.2,
+          "new_range": [
+            120.6,
+            121.6
+          ],
+          "note": "Upfield shift"
+        },
+        {
+          "substituent": "-Cl",
+          "position_of_substituent": "2",
+          "delta_shift": 0.8,
+          "new_range": [
+            124.6,
+            125.6
+          ],
+          "note": "Minimal effect"
+        },
+        {
+          "substituent": "-Br",
+          "position_of_substituent": "2",
+          "delta_shift": 1.2,
+          "new_range": [
+            125.0,
+            126.0
+          ],
+          "note": "Small downfield shift"
+        },
+        {
+          "substituent": "-CF3",
+          "position_of_substituent": "2",
+          "delta_shift": -1.8,
+          "new_range": [
+            122.0,
+            123.0
+          ],
+          "note": "Small upfield shift"
+        }
+      ]
+    },
+    "4": {
+      "base_shift": 124.3,
+      "range": [
+        123.8,
+        124.8
+      ],
+      "carbon_type": "CH",
+      "dept_phase": "up",
+      "substituent_effects": [
+        {
+          "substituent": "-OMe",
+          "position_of_substituent": "5",
+          "delta_shift": 2.5,
+          "new_range": [
+            126.3,
+            127.3
+          ],
+          "note": "Small downfield shift"
+        },
+        {
+          "substituent": "-OH",
+          "position_of_substituent": "5",
+          "delta_shift": 1.8,
+          "new_range": [
+            125.6,
+            126.6
+          ],
+          "note": "Small downfield shift"
+        },
+        {
+          "substituent": "-NO2",
+          "position_of_substituent": "5",
+          "delta_shift": -3.2,
+          "new_range": [
+            120.6,
+            121.6
+          ],
+          "note": "Upfield shift"
+        },
+        {
+          "substituent": "-Cl",
+          "position_of_substituent": "5",
+          "delta_shift": 0.8,
+          "new_range": [
+            124.6,
+            125.6
+          ],
+          "note": "Minimal effect"
+        },
+        {
+          "substituent": "-Br",
+          "position_of_substituent": "5",
+          "delta_shift": 1.2,
+          "new_range": [
+            125.0,
+            126.0
+          ],
+          "note": "Small downfield shift"
+        },
+        {
+          "substituent": "-CF3",
+          "position_of_substituent": "5",
+          "delta_shift": -1.8,
+          "new_range": [
+            122.0,
+            123.0
+          ],
+          "note": "Small upfield shift"
+        }
+      ]
+    },
+    "5": {
+      "base_shift": 127.1,
+      "range": [
+        126.5,
+        127.8
+      ],
+      "carbon_type": "CH",
+      "dept_phase": "up",
+      "substituent_effects": [
+        {
+          "substituent": "-OMe",
+          "position_of_substituent": "4",
+          "delta_shift": -15.2,
+          "new_range": [
+            111.0,
+            112.5
+          ],
+          "note": "Strong upfield shift"
+        },
+        {
+          "substituent": "-OH",
+          "position_of_substituent": "4",
+          "delta_shift": -12.8,
+          "new_range": [
+            113.5,
+            115.0
+          ],
+          "note": "Upfield shift"
+        },
+        {
+          "substituent": "-NO2",
+          "position_of_substituent": "4",
+          "delta_shift": 8.5,
+          "new_range": [
+            135.0,
+            136.5
+          ],
+          "note": "Downfield shift"
+        },
+        {
+          "substituent": "-Cl",
+          "position_of_substituent": "4",
+          "delta_shift": -2.8,
+          "new_range": [
+            123.5,
+            125.0
+          ],
+          "note": "Small upfield shift"
+        },
+        {
+          "substituent": "-Br",
+          "position_of_substituent": "4",
+          "delta_shift": -1.5,
+          "new_range": [
+            125.0,
+            126.5
+          ],
+          "note": "Small upfield shift"
+        },
+        {
+          "substituent": "-CF3",
+          "position_of_substituent": "4",
+          "delta_shift": 5.2,
+          "new_range": [
+            131.5,
+            133.0
+          ],
+          "note": "Downfield shift"
+        }
+      ]
+    }
+  },
+  "ir_bands": {
+    "present": [
+      {
+        "band_range": [
+          3100,
+          3000
+        ],
+        "intensity": "medium",
+        "assignment": "C-H stretch (aromatic)"
+      },
+      {
+        "band_range": [
+          1600,
+          1400
+        ],
+        "intensity": "strong",
+        "assignment": "C=C stretch (aromatic)"
+      },
+      {
+        "band_range": [
+          850,
+          750
+        ],
+        "intensity": "strong",
+        "assignment": "C-H out-of-plane bending"
+      },
+      {
+        "band_range": [
+          700,
+          600
+        ],
+        "intensity": "medium",
+        "assignment": "C-S stretch"
+      }
+    ],
+    "absent": [
+      {
+        "band_range": [
+          3500,
+          3200
+        ],
+        "assignment": "O-H or N-H stretch",
+        "significance": "Confirms absence of hydroxyl or amino groups"
+      },
+      {
+        "band_range": [
+          1750,
+          1650
+        ],
+        "assignment": "C=O stretch",
+        "significance": "Confirms absence of carbonyl groups"
+      }
+    ]
+  },
+  "diagnostic_features": [
+    "Two sets of aromatic protons: α-protons (H-2, H-5) at ~7.31 ppm and β-protons (H-3, H-4) at ~7.05 ppm",
+    "Characteristic coupling pattern with J values of ~5.1 Hz (α-β coupling) and ~3.6 Hz (β-β coupling)",
+    "13C NMR shows α-carbons at ~127 ppm and β-carbons at ~124 ppm",
+    "Strong IR absorption at 850-750 cm⁻¹ for out-of-plane C-H bending is diagnostic",
+    "Substituent effects are more pronounced at α-positions (2,5) than β-positions (3,4)",
+    "Electron-donating substituents cause significant upfield shifts, especially at α-positions"
+  ]
+}

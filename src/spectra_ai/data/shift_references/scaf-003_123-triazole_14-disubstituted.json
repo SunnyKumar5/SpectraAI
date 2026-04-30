@@ -1,0 +1,408 @@
+{
+  "scaffold_id": "SCAF-003",
+  "scaffold_name": "1,2,3-triazole (1,4-disubstituted)",
+  "display_name": "1,4-Disubstituted 1,2,3-triazole",
+  "core_smiles": "c1cnnn1",
+  "core_smarts": "[#6]1:[#6]:[#7]:[#7]:[#7]:1",
+  "numbering_image_ref": "triazole_14_numbering.png",
+  "positions": {
+    "C4": {
+      "atom_type": "C",
+      "hybridization": "sp2",
+      "is_ring_junction": false,
+      "is_bridgehead": false,
+      "substitutable": true,
+      "default_H_count": 1,
+      "notes": "Triazole CH carbon, typically substituted in 1,4-disubstituted derivatives"
+    },
+    "C5": {
+      "atom_type": "C",
+      "hybridization": "sp2",
+      "is_ring_junction": false,
+      "is_bridgehead": false,
+      "substitutable": true,
+      "default_H_count": 1,
+      "notes": "Triazole CH carbon, typically bears hydrogen in 1,4-disubstituted derivatives"
+    },
+    "N1": {
+      "atom_type": "N",
+      "hybridization": "sp2",
+      "is_ring_junction": false,
+      "is_bridgehead": false,
+      "substitutable": true,
+      "default_H_count": 0,
+      "notes": "Typically substituted nitrogen in 1,4-disubstituted derivatives"
+    },
+    "N2": {
+      "atom_type": "N",
+      "hybridization": "sp2",
+      "is_ring_junction": false,
+      "is_bridgehead": false,
+      "substitutable": false,
+      "default_H_count": 0,
+      "notes": "Non-substitutable nitrogen"
+    },
+    "N3": {
+      "atom_type": "N",
+      "hybridization": "sp2",
+      "is_ring_junction": false,
+      "is_bridgehead": false,
+      "substitutable": false,
+      "default_H_count": 0,
+      "notes": "Non-substitutable nitrogen"
+    }
+  },
+  "h1_shifts": {
+    "C5": {
+      "base_shift": 7.8,
+      "range": [
+        7.6,
+        8.2
+      ],
+      "typical_multiplicity": "s",
+      "typical_J": "none",
+      "substituent_effects": [
+        {
+          "substituent": "-OMe",
+          "position_of_substituent": "C4",
+          "delta_shift": -0.3,
+          "new_range": [
+            7.3,
+            7.6
+          ],
+          "note": "Electron-donating effect"
+        },
+        {
+          "substituent": "-OH",
+          "position_of_substituent": "C4",
+          "delta_shift": -0.2,
+          "new_range": [
+            7.4,
+            7.7
+          ],
+          "note": "Moderate electron-donating effect"
+        },
+        {
+          "substituent": "-NH2",
+          "position_of_substituent": "C4",
+          "delta_shift": -0.4,
+          "new_range": [
+            7.2,
+            7.5
+          ],
+          "note": "Strong electron-donating effect"
+        },
+        {
+          "substituent": "-NO2",
+          "position_of_substituent": "C4",
+          "delta_shift": 0.4,
+          "new_range": [
+            8.0,
+            8.6
+          ],
+          "note": "Strong electron-withdrawing effect"
+        },
+        {
+          "substituent": "-Cl",
+          "position_of_substituent": "C4",
+          "delta_shift": 0.1,
+          "new_range": [
+            7.7,
+            8.1
+          ],
+          "note": "Weak electron-withdrawing effect"
+        },
+        {
+          "substituent": "-Br",
+          "position_of_substituent": "C4",
+          "delta_shift": 0.1,
+          "new_range": [
+            7.7,
+            8.1
+          ],
+          "note": "Weak electron-withdrawing effect"
+        },
+        {
+          "substituent": "-CF3",
+          "position_of_substituent": "C4",
+          "delta_shift": 0.3,
+          "new_range": [
+            7.9,
+            8.3
+          ],
+          "note": "Strong electron-withdrawing effect"
+        },
+        {
+          "substituent": "-Ph",
+          "position_of_substituent": "C4",
+          "delta_shift": 0.2,
+          "new_range": [
+            7.8,
+            8.2
+          ],
+          "note": "Aromatic substitution"
+        },
+        {
+          "substituent": "-CO2Me",
+          "position_of_substituent": "C4",
+          "delta_shift": 0.5,
+          "new_range": [
+            8.1,
+            8.5
+          ],
+          "note": "Strong electron-withdrawing carbonyl"
+        },
+        {
+          "substituent": "-CHO",
+          "position_of_substituent": "C4",
+          "delta_shift": 0.6,
+          "new_range": [
+            8.2,
+            8.6
+          ],
+          "note": "Strong electron-withdrawing aldehyde"
+        },
+        {
+          "substituent": "-Ph",
+          "position_of_substituent": "N1",
+          "delta_shift": 0.1,
+          "new_range": [
+            7.7,
+            8.1
+          ],
+          "note": "N-aryl substitution effect"
+        },
+        {
+          "substituent": "-CH3",
+          "position_of_substituent": "N1",
+          "delta_shift": 0.0,
+          "new_range": [
+            7.6,
+            8.0
+          ],
+          "note": "N-alkyl substitution minimal effect"
+        }
+      ],
+      "solvent_effects": {
+        "CDCl3": 7.8,
+        "DMSO-d6": 8.1,
+        "CD3OD": 8.0,
+        "D2O": 8.2
+      }
+    }
+  },
+  "c13_shifts": {
+    "C4": {
+      "base_shift": 124.5,
+      "range": [
+        120.0,
+        130.0
+      ],
+      "carbon_type": "CH",
+      "dept_phase": "up",
+      "substituent_effects": [
+        {
+          "substituent": "-OMe",
+          "position_of_substituent": "C4",
+          "delta_shift": 35.0,
+          "new_range": [
+            155.0,
+            165.0
+          ],
+          "note": "C-O carbon formation, significant downfield shift"
+        },
+        {
+          "substituent": "-NO2",
+          "position_of_substituent": "C4",
+          "delta_shift": 15.0,
+          "new_range": [
+            135.0,
+            145.0
+          ],
+          "note": "Electron-withdrawing deshielding"
+        },
+        {
+          "substituent": "-Ph",
+          "position_of_substituent": "C4",
+          "delta_shift": 10.0,
+          "new_range": [
+            130.0,
+            140.0
+          ],
+          "note": "Aromatic substitution effect"
+        },
+        {
+          "substituent": "-CO2Me",
+          "position_of_substituent": "C4",
+          "delta_shift": 20.0,
+          "new_range": [
+            140.0,
+            150.0
+          ],
+          "note": "Carbonyl substitution"
+        },
+        {
+          "substituent": "-CF3",
+          "position_of_substituent": "C4",
+          "delta_shift": 8.0,
+          "new_range": [
+            128.0,
+            138.0
+          ],
+          "note": "Fluorine substitution effect"
+        },
+        {
+          "substituent": "-Cl",
+          "position_of_substituent": "C4",
+          "delta_shift": 5.0,
+          "new_range": [
+            125.0,
+            135.0
+          ],
+          "note": "Halogen substitution"
+        }
+      ]
+    },
+    "C5": {
+      "base_shift": 128.2,
+      "range": [
+        125.0,
+        132.0
+      ],
+      "carbon_type": "CH",
+      "dept_phase": "up",
+      "substituent_effects": [
+        {
+          "substituent": "-OMe",
+          "position_of_substituent": "C4",
+          "delta_shift": -3.0,
+          "new_range": [
+            122.0,
+            129.0
+          ],
+          "note": "Beta electron-donating effect"
+        },
+        {
+          "substituent": "-NO2",
+          "position_of_substituent": "C4",
+          "delta_shift": 2.0,
+          "new_range": [
+            127.0,
+            134.0
+          ],
+          "note": "Beta electron-withdrawing effect"
+        },
+        {
+          "substituent": "-Ph",
+          "position_of_substituent": "C4",
+          "delta_shift": 1.0,
+          "new_range": [
+            126.0,
+            133.0
+          ],
+          "note": "Aromatic beta effect"
+        },
+        {
+          "substituent": "-CO2Me",
+          "position_of_substituent": "C4",
+          "delta_shift": 3.0,
+          "new_range": [
+            128.0,
+            135.0
+          ],
+          "note": "Carbonyl beta effect"
+        },
+        {
+          "substituent": "-Ph",
+          "position_of_substituent": "N1",
+          "delta_shift": 0.5,
+          "new_range": [
+            125.5,
+            132.5
+          ],
+          "note": "N-substitution remote effect"
+        },
+        {
+          "substituent": "-CH3",
+          "position_of_substituent": "N1",
+          "delta_shift": 0.0,
+          "new_range": [
+            125.0,
+            132.0
+          ],
+          "note": "N-alkyl minimal effect"
+        }
+      ]
+    }
+  },
+  "ir_bands": {
+    "present": [
+      {
+        "band_range": [
+          1500,
+          1600
+        ],
+        "intensity": "strong",
+        "assignment": "C=N and C=C stretching of triazole ring"
+      },
+      {
+        "band_range": [
+          1450,
+          1480
+        ],
+        "intensity": "medium",
+        "assignment": "Triazole ring vibrations"
+      },
+      {
+        "band_range": [
+          1200,
+          1300
+        ],
+        "intensity": "medium",
+        "assignment": "C-N stretching"
+      },
+      {
+        "band_range": [
+          1000,
+          1100
+        ],
+        "intensity": "medium",
+        "assignment": "Ring breathing modes"
+      },
+      {
+        "band_range": [
+          800,
+          900
+        ],
+        "intensity": "medium",
+        "assignment": "C-H out-of-plane bending"
+      }
+    ],
+    "absent": [
+      {
+        "band_range": [
+          3200,
+          3500
+        ],
+        "assignment": "N-H stretching",
+        "significance": "Distinguishes from 1H-triazoles which show N-H stretch"
+      },
+      {
+        "band_range": [
+          2500,
+          2700
+        ],
+        "assignment": "N-H stretching (broad)",
+        "significance": "Confirms absence of NH tautomer"
+      }
+    ]
+  },
+  "diagnostic_features": [
+    "Single triazole CH proton appears as singlet around 7.8 ppm in 1H NMR",
+    "Two distinct carbon signals in 13C NMR around 124-128 ppm for ring carbons",
+    "Absence of N-H stretching in IR distinguishes from 1H-triazole tautomers",
+    "Characteristic triazole ring vibrations at 1500-1600 cm⁻¹ in IR",
+    "Substituent effects on C5-H are moderate due to electronic communication through ring",
+    "DMSO-d6 typically shows slight downfield shift compared to CDCl3 for triazole CH"
+  ]
+}

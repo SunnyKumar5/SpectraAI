@@ -1,0 +1,838 @@
+{
+  "scaffold_id": "SCAF-025",
+  "scaffold_name": "pyrazine",
+  "display_name": "Pyrazine",
+  "core_smiles": "c1cnccn1",
+  "core_smarts": "c1cnccn1",
+  "numbering_image_ref": "pyrazine_numbering.png",
+  "positions": {
+    "2": {
+      "atom_type": "C",
+      "hybridization": "sp2",
+      "is_ring_junction": false,
+      "is_bridgehead": false,
+      "substitutable": true,
+      "default_H_count": 1,
+      "notes": "Equivalent to position 3 by symmetry"
+    },
+    "3": {
+      "atom_type": "C",
+      "hybridization": "sp2",
+      "is_ring_junction": false,
+      "is_bridgehead": false,
+      "substitutable": true,
+      "default_H_count": 1,
+      "notes": "Equivalent to position 2 by symmetry"
+    },
+    "5": {
+      "atom_type": "C",
+      "hybridization": "sp2",
+      "is_ring_junction": false,
+      "is_bridgehead": false,
+      "substitutable": true,
+      "default_H_count": 1,
+      "notes": "Equivalent to position 6 by symmetry"
+    },
+    "6": {
+      "atom_type": "C",
+      "hybridization": "sp2",
+      "is_ring_junction": false,
+      "is_bridgehead": false,
+      "substitutable": true,
+      "default_H_count": 1,
+      "notes": "Equivalent to position 5 by symmetry"
+    },
+    "1": {
+      "atom_type": "N",
+      "hybridization": "sp2",
+      "is_ring_junction": false,
+      "is_bridgehead": false,
+      "substitutable": false,
+      "default_H_count": 0,
+      "notes": "Pyridine-type nitrogen, equivalent to position 4"
+    },
+    "4": {
+      "atom_type": "N",
+      "hybridization": "sp2",
+      "is_ring_junction": false,
+      "is_bridgehead": false,
+      "substitutable": false,
+      "default_H_count": 0,
+      "notes": "Pyridine-type nitrogen, equivalent to position 1"
+    }
+  },
+  "h1_shifts": {
+    "2": {
+      "base_shift": 8.6,
+      "range": [
+        8.55,
+        8.65
+      ],
+      "typical_multiplicity": "d",
+      "typical_J": "J = 1.5 Hz (4J to H-6)",
+      "substituent_effects": [
+        {
+          "substituent": "-OMe",
+          "position_of_substituent": "3",
+          "delta_shift": -0.85,
+          "new_range": [
+            7.7,
+            7.8
+          ],
+          "note": "Strong ortho electron-donating effect"
+        },
+        {
+          "substituent": "-OH",
+          "position_of_substituent": "3",
+          "delta_shift": -0.95,
+          "new_range": [
+            7.6,
+            7.7
+          ],
+          "note": "Strong ortho electron-donating effect"
+        },
+        {
+          "substituent": "-NH2",
+          "position_of_substituent": "3",
+          "delta_shift": -1.2,
+          "new_range": [
+            7.35,
+            7.45
+          ],
+          "note": "Very strong ortho electron-donating effect"
+        },
+        {
+          "substituent": "-NO2",
+          "position_of_substituent": "3",
+          "delta_shift": 0.45,
+          "new_range": [
+            9.0,
+            9.1
+          ],
+          "note": "Strong ortho electron-withdrawing effect"
+        },
+        {
+          "substituent": "-Cl",
+          "position_of_substituent": "3",
+          "delta_shift": -0.25,
+          "new_range": [
+            8.3,
+            8.4
+          ],
+          "note": "Moderate ortho effect"
+        },
+        {
+          "substituent": "-Br",
+          "position_of_substituent": "3",
+          "delta_shift": -0.2,
+          "new_range": [
+            8.35,
+            8.45
+          ],
+          "note": "Moderate ortho effect"
+        },
+        {
+          "substituent": "-F",
+          "position_of_substituent": "3",
+          "delta_shift": -0.35,
+          "new_range": [
+            8.2,
+            8.3
+          ],
+          "note": "Ortho electron-donating effect"
+        },
+        {
+          "substituent": "-CF3",
+          "position_of_substituent": "3",
+          "delta_shift": 0.35,
+          "new_range": [
+            8.9,
+            9.0
+          ],
+          "note": "Strong ortho electron-withdrawing effect"
+        },
+        {
+          "substituent": "-CN",
+          "position_of_substituent": "3",
+          "delta_shift": 0.4,
+          "new_range": [
+            8.95,
+            9.05
+          ],
+          "note": "Strong ortho electron-withdrawing effect"
+        },
+        {
+          "substituent": "-Ph",
+          "position_of_substituent": "3",
+          "delta_shift": -0.15,
+          "new_range": [
+            8.4,
+            8.5
+          ],
+          "note": "Weak ortho effect"
+        }
+      ],
+      "solvent_effects": {
+        "CDCl3": 8.6,
+        "DMSO-d6": 8.75,
+        "CD3OD": 8.65,
+        "D2O": 8.7
+      }
+    },
+    "3": {
+      "base_shift": 8.6,
+      "range": [
+        8.55,
+        8.65
+      ],
+      "typical_multiplicity": "d",
+      "typical_J": "J = 1.5 Hz (4J to H-5)",
+      "substituent_effects": [
+        {
+          "substituent": "-OMe",
+          "position_of_substituent": "2",
+          "delta_shift": -0.85,
+          "new_range": [
+            7.7,
+            7.8
+          ],
+          "note": "Strong ortho electron-donating effect"
+        },
+        {
+          "substituent": "-OH",
+          "position_of_substituent": "2",
+          "delta_shift": -0.95,
+          "new_range": [
+            7.6,
+            7.7
+          ],
+          "note": "Strong ortho electron-donating effect"
+        },
+        {
+          "substituent": "-NH2",
+          "position_of_substituent": "2",
+          "delta_shift": -1.2,
+          "new_range": [
+            7.35,
+            7.45
+          ],
+          "note": "Very strong ortho electron-donating effect"
+        },
+        {
+          "substituent": "-NO2",
+          "position_of_substituent": "2",
+          "delta_shift": 0.45,
+          "new_range": [
+            9.0,
+            9.1
+          ],
+          "note": "Strong ortho electron-withdrawing effect"
+        },
+        {
+          "substituent": "-Cl",
+          "position_of_substituent": "2",
+          "delta_shift": -0.25,
+          "new_range": [
+            8.3,
+            8.4
+          ],
+          "note": "Moderate ortho effect"
+        },
+        {
+          "substituent": "-Br",
+          "position_of_substituent": "2",
+          "delta_shift": -0.2,
+          "new_range": [
+            8.35,
+            8.45
+          ],
+          "note": "Moderate ortho effect"
+        },
+        {
+          "substituent": "-F",
+          "position_of_substituent": "2",
+          "delta_shift": -0.35,
+          "new_range": [
+            8.2,
+            8.3
+          ],
+          "note": "Ortho electron-donating effect"
+        },
+        {
+          "substituent": "-CF3",
+          "position_of_substituent": "2",
+          "delta_shift": 0.35,
+          "new_range": [
+            8.9,
+            9.0
+          ],
+          "note": "Strong ortho electron-withdrawing effect"
+        }
+      ],
+      "solvent_effects": {
+        "CDCl3": 8.6,
+        "DMSO-d6": 8.75,
+        "CD3OD": 8.65,
+        "D2O": 8.7
+      }
+    },
+    "5": {
+      "base_shift": 8.6,
+      "range": [
+        8.55,
+        8.65
+      ],
+      "typical_multiplicity": "d",
+      "typical_J": "J = 1.5 Hz (4J to H-3)",
+      "substituent_effects": [
+        {
+          "substituent": "-OMe",
+          "position_of_substituent": "6",
+          "delta_shift": -0.85,
+          "new_range": [
+            7.7,
+            7.8
+          ],
+          "note": "Strong ortho electron-donating effect"
+        },
+        {
+          "substituent": "-OH",
+          "position_of_substituent": "6",
+          "delta_shift": -0.95,
+          "new_range": [
+            7.6,
+            7.7
+          ],
+          "note": "Strong ortho electron-donating effect"
+        },
+        {
+          "substituent": "-NH2",
+          "position_of_substituent": "6",
+          "delta_shift": -1.2,
+          "new_range": [
+            7.35,
+            7.45
+          ],
+          "note": "Very strong ortho electron-donating effect"
+        },
+        {
+          "substituent": "-NO2",
+          "position_of_substituent": "6",
+          "delta_shift": 0.45,
+          "new_range": [
+            9.0,
+            9.1
+          ],
+          "note": "Strong ortho electron-withdrawing effect"
+        },
+        {
+          "substituent": "-Cl",
+          "position_of_substituent": "6",
+          "delta_shift": -0.25,
+          "new_range": [
+            8.3,
+            8.4
+          ],
+          "note": "Moderate ortho effect"
+        },
+        {
+          "substituent": "-Br",
+          "position_of_substituent": "6",
+          "delta_shift": -0.2,
+          "new_range": [
+            8.35,
+            8.45
+          ],
+          "note": "Moderate ortho effect"
+        },
+        {
+          "substituent": "-F",
+          "position_of_substituent": "6",
+          "delta_shift": -0.35,
+          "new_range": [
+            8.2,
+            8.3
+          ],
+          "note": "Ortho electron-donating effect"
+        },
+        {
+          "substituent": "-CF3",
+          "position_of_substituent": "6",
+          "delta_shift": 0.35,
+          "new_range": [
+            8.9,
+            9.0
+          ],
+          "note": "Strong ortho electron-withdrawing effect"
+        }
+      ],
+      "solvent_effects": {
+        "CDCl3": 8.6,
+        "DMSO-d6": 8.75,
+        "CD3OD": 8.65,
+        "D2O": 8.7
+      }
+    },
+    "6": {
+      "base_shift": 8.6,
+      "range": [
+        8.55,
+        8.65
+      ],
+      "typical_multiplicity": "d",
+      "typical_J": "J = 1.5 Hz (4J to H-2)",
+      "substituent_effects": [
+        {
+          "substituent": "-OMe",
+          "position_of_substituent": "5",
+          "delta_shift": -0.85,
+          "new_range": [
+            7.7,
+            7.8
+          ],
+          "note": "Strong ortho electron-donating effect"
+        },
+        {
+          "substituent": "-OH",
+          "position_of_substituent": "5",
+          "delta_shift": -0.95,
+          "new_range": [
+            7.6,
+            7.7
+          ],
+          "note": "Strong ortho electron-donating effect"
+        },
+        {
+          "substituent": "-NH2",
+          "position_of_substituent": "5",
+          "delta_shift": -1.2,
+          "new_range": [
+            7.35,
+            7.45
+          ],
+          "note": "Very strong ortho electron-donating effect"
+        },
+        {
+          "substituent": "-NO2",
+          "position_of_substituent": "5",
+          "delta_shift": 0.45,
+          "new_range": [
+            9.0,
+            9.1
+          ],
+          "note": "Strong ortho electron-withdrawing effect"
+        },
+        {
+          "substituent": "-Cl",
+          "position_of_substituent": "5",
+          "delta_shift": -0.25,
+          "new_range": [
+            8.3,
+            8.4
+          ],
+          "note": "Moderate ortho effect"
+        },
+        {
+          "substituent": "-Br",
+          "position_of_substituent": "5",
+          "delta_shift": -0.2,
+          "new_range": [
+            8.35,
+            8.45
+          ],
+          "note": "Moderate ortho effect"
+        },
+        {
+          "substituent": "-F",
+          "position_of_substituent": "5",
+          "delta_shift": -0.35,
+          "new_range": [
+            8.2,
+            8.3
+          ],
+          "note": "Ortho electron-donating effect"
+        },
+        {
+          "substituent": "-CF3",
+          "position_of_substituent": "5",
+          "delta_shift": 0.35,
+          "new_range": [
+            8.9,
+            9.0
+          ],
+          "note": "Strong ortho electron-withdrawing effect"
+        }
+      ],
+      "solvent_effects": {
+        "CDCl3": 8.6,
+        "DMSO-d6": 8.75,
+        "CD3OD": 8.65,
+        "D2O": 8.7
+      }
+    }
+  },
+  "c13_shifts": {
+    "2": {
+      "base_shift": 144.2,
+      "range": [
+        143.8,
+        144.6
+      ],
+      "carbon_type": "CH",
+      "dept_phase": "up",
+      "substituent_effects": [
+        {
+          "substituent": "-OMe",
+          "position_of_substituent": "3",
+          "delta_shift": -12.5,
+          "new_range": [
+            131.0,
+            132.0
+          ],
+          "note": "Strong ortho shielding effect"
+        },
+        {
+          "substituent": "-OH",
+          "position_of_substituent": "3",
+          "delta_shift": -15.0,
+          "new_range": [
+            128.5,
+            129.5
+          ],
+          "note": "Strong ortho shielding effect"
+        },
+        {
+          "substituent": "-NH2",
+          "position_of_substituent": "3",
+          "delta_shift": -18.5,
+          "new_range": [
+            125.0,
+            126.0
+          ],
+          "note": "Very strong ortho shielding effect"
+        },
+        {
+          "substituent": "-NO2",
+          "position_of_substituent": "3",
+          "delta_shift": 6.8,
+          "new_range": [
+            150.5,
+            151.5
+          ],
+          "note": "Strong ortho deshielding effect"
+        },
+        {
+          "substituent": "-Cl",
+          "position_of_substituent": "3",
+          "delta_shift": -3.2,
+          "new_range": [
+            140.5,
+            141.5
+          ],
+          "note": "Moderate ortho shielding effect"
+        },
+        {
+          "substituent": "-Br",
+          "position_of_substituent": "3",
+          "delta_shift": -2.8,
+          "new_range": [
+            141.0,
+            142.0
+          ],
+          "note": "Moderate ortho shielding effect"
+        }
+      ]
+    },
+    "3": {
+      "base_shift": 144.2,
+      "range": [
+        143.8,
+        144.6
+      ],
+      "carbon_type": "CH",
+      "dept_phase": "up",
+      "substituent_effects": [
+        {
+          "substituent": "-OMe",
+          "position_of_substituent": "2",
+          "delta_shift": -12.5,
+          "new_range": [
+            131.0,
+            132.0
+          ],
+          "note": "Strong ortho shielding effect"
+        },
+        {
+          "substituent": "-OH",
+          "position_of_substituent": "2",
+          "delta_shift": -15.0,
+          "new_range": [
+            128.5,
+            129.5
+          ],
+          "note": "Strong ortho shielding effect"
+        },
+        {
+          "substituent": "-NH2",
+          "position_of_substituent": "2",
+          "delta_shift": -18.5,
+          "new_range": [
+            125.0,
+            126.0
+          ],
+          "note": "Very strong ortho shielding effect"
+        },
+        {
+          "substituent": "-NO2",
+          "position_of_substituent": "2",
+          "delta_shift": 6.8,
+          "new_range": [
+            150.5,
+            151.5
+          ],
+          "note": "Strong ortho deshielding effect"
+        },
+        {
+          "substituent": "-Cl",
+          "position_of_substituent": "2",
+          "delta_shift": -3.2,
+          "new_range": [
+            140.5,
+            141.5
+          ],
+          "note": "Moderate ortho shielding effect"
+        },
+        {
+          "substituent": "-Br",
+          "position_of_substituent": "2",
+          "delta_shift": -2.8,
+          "new_range": [
+            141.0,
+            142.0
+          ],
+          "note": "Moderate ortho shielding effect"
+        }
+      ]
+    },
+    "5": {
+      "base_shift": 144.2,
+      "range": [
+        143.8,
+        144.6
+      ],
+      "carbon_type": "CH",
+      "dept_phase": "up",
+      "substituent_effects": [
+        {
+          "substituent": "-OMe",
+          "position_of_substituent": "6",
+          "delta_shift": -12.5,
+          "new_range": [
+            131.0,
+            132.0
+          ],
+          "note": "Strong ortho shielding effect"
+        },
+        {
+          "substituent": "-OH",
+          "position_of_substituent": "6",
+          "delta_shift": -15.0,
+          "new_range": [
+            128.5,
+            129.5
+          ],
+          "note": "Strong ortho shielding effect"
+        },
+        {
+          "substituent": "-NH2",
+          "position_of_substituent": "6",
+          "delta_shift": -18.5,
+          "new_range": [
+            125.0,
+            126.0
+          ],
+          "note": "Very strong ortho shielding effect"
+        },
+        {
+          "substituent": "-NO2",
+          "position_of_substituent": "6",
+          "delta_shift": 6.8,
+          "new_range": [
+            150.5,
+            151.5
+          ],
+          "note": "Strong ortho deshielding effect"
+        },
+        {
+          "substituent": "-Cl",
+          "position_of_substituent": "6",
+          "delta_shift": -3.2,
+          "new_range": [
+            140.5,
+            141.5
+          ],
+          "note": "Moderate ortho shielding effect"
+        },
+        {
+          "substituent": "-Br",
+          "position_of_substituent": "6",
+          "delta_shift": -2.8,
+          "new_range": [
+            141.0,
+            142.0
+          ],
+          "note": "Moderate ortho shielding effect"
+        }
+      ]
+    },
+    "6": {
+      "base_shift": 144.2,
+      "range": [
+        143.8,
+        144.6
+      ],
+      "carbon_type": "CH",
+      "dept_phase": "up",
+      "substituent_effects": [
+        {
+          "substituent": "-OMe",
+          "position_of_substituent": "5",
+          "delta_shift": -12.5,
+          "new_range": [
+            131.0,
+            132.0
+          ],
+          "note": "Strong ortho shielding effect"
+        },
+        {
+          "substituent": "-OH",
+          "position_of_substituent": "5",
+          "delta_shift": -15.0,
+          "new_range": [
+            128.5,
+            129.5
+          ],
+          "note": "Strong ortho shielding effect"
+        },
+        {
+          "substituent": "-NH2",
+          "position_of_substituent": "5",
+          "delta_shift": -18.5,
+          "new_range": [
+            125.0,
+            126.0
+          ],
+          "note": "Very strong ortho shielding effect"
+        },
+        {
+          "substituent": "-NO2",
+          "position_of_substituent": "5",
+          "delta_shift": 6.8,
+          "new_range": [
+            150.5,
+            151.5
+          ],
+          "note": "Strong ortho deshielding effect"
+        },
+        {
+          "substituent": "-Cl",
+          "position_of_substituent": "5",
+          "delta_shift": -3.2,
+          "new_range": [
+            140.5,
+            141.5
+          ],
+          "note": "Moderate ortho shielding effect"
+        },
+        {
+          "substituent": "-Br",
+          "position_of_substituent": "5",
+          "delta_shift": -2.8,
+          "new_range": [
+            141.0,
+            142.0
+          ],
+          "note": "Moderate ortho shielding effect"
+        }
+      ]
+    }
+  },
+  "ir_bands": {
+    "present": [
+      {
+        "band_range": [
+          3080,
+          3020
+        ],
+        "intensity": "weak",
+        "assignment": "C-H stretch (aromatic)"
+      },
+      {
+        "band_range": [
+          1580,
+          1520
+        ],
+        "intensity": "strong",
+        "assignment": "C=C, C=N stretch (ring)"
+      },
+      {
+        "band_range": [
+          1460,
+          1420
+        ],
+        "intensity": "medium",
+        "assignment": "C=C, C=N stretch (ring)"
+      },
+      {
+        "band_range": [
+          1180,
+          1120
+        ],
+        "intensity": "medium",
+        "assignment": "C-N stretch"
+      },
+      {
+        "band_range": [
+          1020,
+          980
+        ],
+        "intensity": "medium",
+        "assignment": "Ring breathing"
+      },
+      {
+        "band_range": [
+          850,
+          800
+        ],
+        "intensity": "strong",
+        "assignment": "C-H out-of-plane bend"
+      }
+    ],
+    "absent": [
+      {
+        "band_range": [
+          3500,
+          3200
+        ],
+        "assignment": "N-H stretch",
+        "significance": "Distinguishes from pyrazoles and imidazoles"
+      },
+      {
+        "band_range": [
+          1700,
+          1650
+        ],
+        "assignment": "C=O stretch",
+        "significance": "Distinguishes from pyrazinones"
+      }
+    ]
+  },
+  "diagnostic_features": [
+    "All four aromatic protons appear as equivalent singlet at δ 8.60 ppm in unsubstituted pyrazine",
+    "13C NMR shows single peak at δ 144.2 ppm for all four equivalent carbons",
+    "Substitution breaks symmetry, leading to complex splitting patterns",
+    "Electron-donating substituents cause significant upfield shifts (up to -1.2 ppm for NH2)",
+    "Electron-withdrawing substituents cause moderate downfield shifts (+0.4-0.5 ppm)",
+    "IR shows characteristic strong absorption around 1550 cm⁻¹ for C=N stretching"
+  ]
+}
