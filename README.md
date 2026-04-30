@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # SpectraAI — Multi-Spectral Generative AI Suite
 
 **Scaffold-Constrained Multi-Spectral Analysis for Heterocycle Characterization**
@@ -215,3 +216,7 @@ MIT License — See [LICENSE](LICENSE) for details.
 ## Acknowledgments
 
 Research collaboration with BITS Pilani. Built with PyQt5, pyqtgraph, Anthropic Claude API, and Google Gemini API.
+=======
+# SpectraAI
+Spectra AI is a foundation model for molecular structure elucidation. It uses a Multimodal Spectroscopic Transformer to align $^{1}$H, $^{13}$C, and HSQC NMR signals into a latent chemical manifold. An SE(3)-equivariant GNN then refines 3D coordinates with a 0.9987 $R^{2}$ accuracy across a 1.1M compound chemical space.
+>>>>>>> 36067c802fdcedf29d1b8200746c21a8219c6603
